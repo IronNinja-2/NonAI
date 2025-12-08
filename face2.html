@@ -1,0 +1,345 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Face Recognition Attendance</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+    <style>
+      :root{--bg:#0b1020;--panel:#121a2b;--muted:#9fb0c3;--text:#e7eef8;--accent:#4f8cff;--danger:#ef4444;--border:#22314b;--ok:#22c55e}
+      *{box-sizing:border-box}
+      body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 600px at 10% -10%, #1d2950 0%, #0b1020 50%),var(--bg);color:var(--text)}
+      .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+      h1{font-size:22px;margin:0 0 10px}
+      .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+      @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+      .card{background:linear-gradient(180deg,#121a2b 0%,#0f1626 100%);border:1px solid var(--border);border-radius:14px;padding:14px}
+      label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+      input,select{width:100%;padding:10px 12px;background:#0c1424;color:var(--text);border:1px solid var(--border);border-radius:10px;outline:none}
+      button{padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:#0c1424;color:var(--text);cursor:pointer}
+      .primary{background:linear-gradient(180deg,#4f8cff,#3d76e6);border-color:#3d76e6}
+      .danger{background:linear-gradient(180deg,#ef4444,#dc2626);border-color:#dc2626}
+      .ok{background:linear-gradient(180deg,#22c55e,#16a34a);border-color:#16a34a}
+      .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+      @media(max-width:700px){.row{grid-template-columns:1fr}}
+      .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+      .muted{color:var(--muted);font-size:12px}
+      #stage{position:relative;background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+      video,canvas{display:block;width:100%;height:auto}
+      table{width:100%;border-collapse:collapse;background:#0c1424;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+      th,td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:14px}
+      th{text-align:left;color:var(--muted);background:#0f1626}
+      tr:last-child td{border-bottom:none}
+      .list{max-height:170px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px;background:#0c1424}
+      .pill{display:inline-flex;align-items:center;gap:8px;background:#13213a;border:1px solid var(--border);padding:6px 10px;border-radius:999px;margin:4px 6px 0 0;font-size:12px}
+      .status{font-size:12px;margin-top:8px}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Face Recognition Attendance</h1>
+      <div class="grid">
+        <div class="card">
+          <div id="stage">
+            <video id="video" autoplay muted playsinline></video>
+            <canvas id="overlay"></canvas>
+          </div>
+          <div class="actions">
+            <button id="startCam" class="primary">Start Camera</button>
+            <button id="stopCam">Stop Camera</button>
+            <button id="loadModels" class="ok">Load Models</button>
+            <button id="startAll" class="ok">Start System</button>
+            <button id="regOnce">Capture for Register</button>
+            <input id="personName" placeholder="Name for registration" />
+            <input id="personId" placeholder="Employee/Student ID (optional)" />
+            <button id="savePerson" class="primary">Save Face</button>
+          </div>
+          <div class="actions">
+            <button id="startAttend" class="ok">Start Attendance</button>
+            <button id="stopAttend">Stop Attendance</button>
+            <button id="exportCsv" class="primary">Export CSV</button>
+            <button id="clearLogs" class="danger">Clear Attendance</button>
+            <button id="showToday" >Show Today's Attendance</button>
+          </div>
+          <div class="status" id="status">Status: Idle</div>
+          <div class="muted">Data is stored locally in your browser (embeddings and logs). Ensure good lighting and face framing for best results.</div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <div>
+              <label>Registered People</label>
+              <div id="people" class="list"></div>
+              <div class="actions">
+                <button id="clearPeople" class="danger">Clear All People</button>
+              </div>
+            </div>
+            <div>
+              <label>Attendance Log</label>
+              <table>
+                <thead>
+                  <tr><th>Name</th><th>Time</th><th>Status</th><th>Confidence</th></tr>
+                </thead>
+                <tbody id="logs"></tbody>
+              </table>
+              <div class="status" id="summary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+      const video = el('video');
+      const overlay = el('overlay');
+      const ctx = overlay.getContext('2d');
+      let stream = null;
+      let modelsLoaded = false;
+      let recognizing = false;
+      let descriptors = []; 
+      let capturedDescriptor = null;
+
+      const LKEY = 'face_people_v1';
+      const AKEY = 'face_attendance_v1';
+
+      function savePeople(){
+        const data = descriptors.map(d => ({ name: d.label, desc: d.descriptors.map(a => Array.from(a)) }));
+        localStorage.setItem(LKEY, JSON.stringify(data));
+        renderPeople();
+      }
+
+      function loadPeople(){
+        const raw = localStorage.getItem(LKEY);
+        if (!raw) return;
+        const arr = JSON.parse(raw);
+        descriptors = arr.map(p => new faceapi.LabeledFaceDescriptors(p.name, p.desc.map(a => new Float32Array(a))));
+        renderPeople();
+      }
+
+      function todayKey(){ const d = new Date(); const m = String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${d.getFullYear()}-${m}-${day}`; }
+      function addLog(name, distance){
+        const dateKey = todayKey();
+        const rec = { name, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), dateKey, status: 'Present', conf: (1-Math.min(distance,1)).toFixed(2) };
+        const cur = JSON.parse(localStorage.getItem(AKEY) || '[]');
+        if (!cur.some(r => r.name === rec.name && r.dateKey === rec.dateKey)){
+          cur.push(rec);
+          localStorage.setItem(AKEY, JSON.stringify(cur));
+          renderLogs();
+          el('status').textContent = `Attendance marked for ${rec.name} at ${rec.time}, ${dateKey}.`;
+        }
+      }
+
+      function renderLogs(){
+        const tbody = el('logs');
+        tbody.innerHTML = '';
+        const rows = JSON.parse(localStorage.getItem(AKEY) || '[]');
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          const status = r.status || 'Present';
+          tr.innerHTML = `<td>${r.name}</td><td>${r.time} ${r.dateKey||''}</td><td>${status}</td><td>${r.conf||''}</td>`;
+          tbody.appendChild(tr);
+        });
+        updateTodaySummary();
+      }
+
+      function renderPeople(){
+        const box = el('people');
+        box.innerHTML = '';
+        descriptors.forEach(p => {
+          const d = document.createElement('span');
+          d.className = 'pill';
+          d.textContent = p.label;
+          box.appendChild(d);
+        });
+      }
+
+      async function startCamera(){
+        if (stream) return;
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+        video.srcObject = stream;
+        await new Promise(r => video.onloadedmetadata = r);
+        try { await video.play(); } catch(e) {}
+        overlay.width = video.videoWidth;
+        overlay.height = video.videoHeight;
+        ctx.font = '12px sans-serif';
+        ctx.textBaseline = 'top';
+        el('status').textContent = 'Status: Camera started';
+      }
+
+      async function stopCamera(){
+        recognizing = false;
+        if (stream){
+          stream.getTracks().forEach(t => t.stop());
+          stream = null;
+          video.srcObject = null;
+        }
+        ctx.clearRect(0,0,overlay.width, overlay.height);
+        el('status').textContent = 'Status: Camera stopped';
+      }
+
+      async function loadModels(){
+        if (modelsLoaded) return;
+        const base = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(base),
+          faceapi.nets.faceLandmark68Net.loadFromUri(base),
+          faceapi.nets.faceRecognitionNet.loadFromUri(base)
+        ]);
+        modelsLoaded = true;
+        el('status').textContent = 'Status: Models loaded';
+      }
+
+      async function startSystem(){
+        try{
+          await loadModels();
+          await startCamera();
+          el('status').textContent = 'Status: System ready (models loaded, camera started)';
+        } catch (e){
+          el('status').textContent = `Status: Error starting system: ${e?.message||e}`;
+        }
+      }
+
+      async function captureDescriptor(){
+        if (!modelsLoaded || !video.srcObject) { el('status').textContent = 'Status: Start camera and load models first'; return; }
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+        if (!detection){ el('status').textContent = 'Status: No face detected'; return; }
+        capturedDescriptor = detection.descriptor;
+        ctx.clearRect(0,0,overlay.width, overlay.height);
+        faceapi.draw.drawDetections(overlay, [detection.detection]);
+        el('status').textContent = 'Status: Face captured. Enter name and Save Face';
+      }
+
+      async function saveCaptured(){
+        const name = el('personName').value.trim();
+        const pid = el('personId').value.trim();
+        if (!name){ el('status').textContent = 'Status: Enter a name'; return; }
+        if (!modelsLoaded || !video.srcObject){ el('status').textContent = 'Status: Start camera and load models first'; return; }
+        if (!capturedDescriptor){
+          const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+          if (!detection){ el('status').textContent = 'Status: No face detected. Please look at the camera and try again.'; return; }
+          capturedDescriptor = detection.descriptor;
+        }
+        if (!confirm(`Add user "${name}${pid?` (${pid})`:''}" to the database?`)) { return; }
+        const label = pid ? `${name} (${pid})` : name;
+        const existing = descriptors.find(d => d.label.toLowerCase() === label.toLowerCase());
+        if (existing){
+          const arr = Array.from(existing.descriptors);
+          arr.push(new Float32Array(capturedDescriptor));
+          const idx = descriptors.findIndex(d => d.label === existing.label);
+          descriptors[idx] = new faceapi.LabeledFaceDescriptors(existing.label, arr);
+        } else {
+          descriptors.push(new faceapi.LabeledFaceDescriptors(label, [new Float32Array(capturedDescriptor)]));
+        }
+        savePeople();
+        capturedDescriptor = null;
+        el('personName').value = '';
+        el('personId').value = '';
+        el('status').textContent = `Status: Face saved for ${label}`;
+      }
+
+      async function startAttendance(){
+        if (!modelsLoaded || !video.srcObject){ el('status').textContent = 'Status: Start camera and load models first'; return; }
+        if (!descriptors.length){ el('status').textContent = 'Status: Register at least one person'; return; }
+        if (!confirm('Start attendance and save presence logs for recognized faces?')){ return; }
+        recognizing = true;
+        el('status').textContent = 'Status: Attendance running';
+        const matcher = new faceapi.FaceMatcher(descriptors, 0.5);
+        loopRecognize(matcher);
+      }
+
+      let lastUnknownTime = 0;
+      async function loopRecognize(matcher){
+        while (recognizing){
+          const result = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
+          ctx.clearRect(0,0,overlay.width, overlay.height);
+          result.forEach(res => {
+            const best = matcher.findBestMatch(res.descriptor);
+            const { x, y, width, height } = res.detection.box;
+            ctx.strokeStyle = best.label === 'unknown' ? '#ef4444' : '#22c55e';
+            ctx.lineWidth = 2; ctx.strokeRect(x, y, width, height);
+            ctx.fillStyle = '#0c1424';
+            const tag = best.label === 'unknown' ? 'Face not recognized' : best.toString();
+            ctx.fillRect(x, y - 18, ctx.measureText(tag).width + 10, 18);
+            ctx.fillStyle = '#e7eef8';
+            ctx.fillText(tag, x + 4, y - 6);
+            if (best.label !== 'unknown') addLog(best.label, best.distance);
+            else {
+              const now = Date.now();
+              if (now - lastUnknownTime > 2000){
+                el('status').textContent = 'Face not recognized. Please register face first or try again.';
+                lastUnknownTime = now;
+              }
+            }
+          });
+          await new Promise(r => setTimeout(r, 250));
+        }
+      }
+
+      function stopAttendance(){
+        recognizing = false;
+        el('status').textContent = 'Status: Attendance stopped';
+      }
+
+      function exportCsv(){
+        const rows = JSON.parse(localStorage.getItem(AKEY) || '[]');
+        const head = 'Name,Date,Time,Status,Confidence\n';
+        const body = rows.map(r => `${JSON.stringify(r.name)},${JSON.stringify(r.dateKey||'')},${JSON.stringify(r.time||'')},${JSON.stringify(r.status||'Present')},${JSON.stringify(r.conf||'')}`).join('\n');
+        const blob = new Blob([head + body], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'attendance.csv'; a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function clearLogs(){ if (confirm('Clear all attendance logs?')){ localStorage.removeItem(AKEY); renderLogs(); } }
+      function clearPeople(){ if (confirm('Delete ALL registered users?')){ descriptors = []; savePeople(); } }
+
+      function todayEntries(){
+        const rows = JSON.parse(localStorage.getItem(AKEY) || '[]');
+        const dk = todayKey();
+        const uniq = new Map();
+        rows.filter(r => r.dateKey === dk).forEach(r => { if (!uniq.has(r.name)) uniq.set(r.name, r); });
+        return Array.from(uniq.values());
+      }
+
+      function updateTodaySummary(){
+        const present = todayEntries();
+        const registered = descriptors.map(d => d.label);
+        const absent = registered.filter(n => !present.some(p => p.name === n));
+        el('summary').textContent = `Today's attendance: Present ${present.length}, Absent ${absent.length}`;
+      }
+
+      function showToday(){
+        const list = todayEntries();
+        const tbody = el('logs');
+        tbody.innerHTML = '';
+        list.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${r.name}</td><td>${r.time} ${r.dateKey}</td><td>${r.status}</td><td>${r.conf}</td>`;
+          tbody.appendChild(tr);
+        });
+        updateTodaySummary();
+        el('status').textContent = "Here is today's attendance list.";
+      }
+
+      el('startCam').addEventListener('click', startCamera);
+      el('stopCam').addEventListener('click', stopCamera);
+      el('loadModels').addEventListener('click', loadModels);
+      el('regOnce').addEventListener('click', captureDescriptor);
+      el('savePerson').addEventListener('click', saveCaptured);
+      el('startAttend').addEventListener('click', startAttendance);
+      el('stopAttend').addEventListener('click', stopAttendance);
+      el('exportCsv').addEventListener('click', exportCsv);
+      el('clearLogs').addEventListener('click', clearLogs);
+      el('clearPeople').addEventListener('click', clearPeople);
+      el('showToday').addEventListener('click', showToday);
+      el('startAll').addEventListener('click', startSystem);
+
+      loadPeople();
+      renderLogs();
+    </script>
+  </body>
+</html>
+

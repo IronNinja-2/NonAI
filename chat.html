@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI English Voice Tutor</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; display: flex; flex-direction: column; align-items: center; height: 100vh; margin: 0; }
+        
+        /* Header & API Key Input */
+        header { width: 100%; background: #4a90e2; padding: 15px; text-align: center; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .api-container { margin-top: 10px; }
+        input[type="password"] { padding: 5px; border-radius: 4px; border: none; width: 250px; }
+        
+        /* Chat Box */
+        #chat-container { width: 90%; max-width: 600px; height: 60vh; background: white; margin-top: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* Messages */
+        .message { padding: 10px 15px; border-radius: 20px; max-width: 80%; line-height: 1.4; font-size: 16px; }
+        .user { align-self: flex-end; background-color: #4a90e2; color: white; border-bottom-right-radius: 0; }
+        .bot { align-self: flex-start; background-color: #e9e9eb; color: #333; border-bottom-left-radius: 0; }
+        
+        /* Controls */
+        .controls { margin-top: 20px; text-align: center; }
+        button { padding: 15px 30px; font-size: 18px; border: none; border-radius: 50px; cursor: pointer; transition: 0.3s; background-color: #ff5252; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        button:hover { background-color: #ff1717; transform: scale(1.05); }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        
+        .status { margin-top: 10px; font-style: italic; color: #666; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🗣️ AI Spoken English Tutor</h1>
+    <div class="api-container">
+        <input type="password" id="apiKey" placeholder="Paste your OpenAI API Key here">
+    </div>
+</header>
+
+<div id="chat-container">
+    <div class="message bot">Hello! I am your English tutor. Click "Hold to Speak" and say something. I will check your grammar and reply.</div>
+</div>
+
+<div class="controls">
+    <button id="talkBtn">🎙️ Hold to Speak</button>
+    <div class="status" id="statusText">Ready</div>
+</div>
+
+<script>
+    // 1. CONFIGURATION
+    const talkBtn = document.getElementById('talkBtn');
+    const chatContainer = document.getElementById('chat-container');
+    const statusText = document.getElementById('statusText');
+    const apiKeyInput = document.getElementById('apiKey');
+
+    // Speech Recognition Setup (Web Speech API)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US'; // Set language to English
+    recognition.interimResults = false;
+
+    // 2. SPEECH RECOGNITION EVENTS
+    talkBtn.addEventListener('mousedown', () => {
+        recognition.start();
+        statusText.innerText = "Listening...";
+        talkBtn.style.backgroundColor = "#2ecc71"; // Green
+    });
+
+    talkBtn.addEventListener('mouseup', () => {
+        recognition.stop();
+        statusText.innerText = "Processing...";
+        talkBtn.style.backgroundColor = "#ff5252"; // Red
+    });
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        addMessage(transcript, 'user');
+        getAIResponse(transcript);
+    };
+
+    recognition.onerror = (event) => {
+        statusText.innerText = "Error: " + event.error;
+    };
+
+    // 3. SEND TO AI (OPENAI API)
+    async function getAIResponse(userText) {
+        const apiKey = apiKeyInput.value;
+        if (!apiKey) {
+            addMessage("Please enter your OpenAI API Key at the top.", 'bot');
+            speak("Please enter your API Key first.");
+            return;
+        }
+
+        const prompt = `
+        You are a friendly English tutor. 
+        The user just said: "${userText}".
+        1. If the user made a grammar mistake, correct it clearly.
+        2. Then, answer the user to keep the conversation going.
+        Keep the response short and conversational.
+        `;
+
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [{ role: "user", content: prompt }]
+                })
+            });
+
+            const data = await response.json();
+            const botReply = data.choices[0].message.content;
+            
+            addMessage(botReply, 'bot');
+            speak(botReply);
+            statusText.innerText = "Ready";
+
+        } catch (error) {
+            addMessage("Error connecting to AI.", 'bot');
+            console.error(error);
+        }
+    }
+
+    // 4. TEXT TO SPEECH
+    function speak(text) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 1; // Speed
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Helper: Add message to chat window
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.classList.add('message', sender);
+        div.innerText = text;
+        chatContainer.appendChild(div);
+        chatContainer.scrollTop = chatContainer.scrollHeight; // Auto scroll
+    }
+</script>
+
+</body>
+</html>

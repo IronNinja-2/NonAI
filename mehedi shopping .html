@@ -1,0 +1,463 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Online Store</title>
+    <meta name="description" content="Modern online shopping homepage with responsive product grid." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root{
+        --bg:#0b1020; --surface:#121a2b; --surface-2:#0f1626; --text:#e7eef8; --muted:#9fb0c3; --accent:#4f8cff; --border:#22314b; --card:#0c1424; --ok:#22c55e;
+      }
+      *{box-sizing:border-box}
+      body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 600px at 10% -10%, #1d2950 0%, #0b1020 50%),var(--bg);color:var(--text)}
+      a{color:inherit;text-decoration:none}
+      .container{max-width:1200px;margin:0 auto;padding:0 16px}
+
+      /* Header */
+      header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,var(--surface) 0%, rgba(18,26,43,0.9) 100%);border-bottom:1px solid var(--border);backdrop-filter:blur(6px)}
+      .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+      .brand{display:flex;align-items:center;gap:10px}
+      .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(180deg,#4f8cff,#3d76e6)}
+      .brand span{font-weight:700;letter-spacing:.3px}
+      .menu{display:flex;gap:18px;flex-wrap:wrap}
+      .menu a{color:var(--muted);font-weight:500}
+      .menu a:hover{color:var(--text)}
+
+      /* Hero */
+      .hero{position:relative;overflow:hidden}
+      .hero-inner{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;padding:48px 0}
+      @media (max-width:900px){.hero-inner{grid-template-columns:1fr;padding:32px 0}}
+      .hero h1{font-size:38px;margin:0 0 8px}
+      .hero p{color:var(--muted);margin:0 0 16px}
+      .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+      .btn{padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));color:var(--text);cursor:pointer;transition:transform .12s ease, box-shadow .12s ease}
+      .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+      .btn.primary{background:linear-gradient(180deg,#4f8cff,#3d76e6);border-color:#3d76e6}
+      .btn.ghost{background:transparent}
+      .btn:focus{outline:none;box-shadow:0 0 0 3px rgba(79,140,255,.25)}
+      .hero-art{border:1px solid var(--border);background:radial-gradient(600px 300px at 20% -20%, #1d2950 0%, #0f1626 50%),var(--surface-2);border-radius:16px;min-height:240px}
+
+      /* Grid */
+      .section{padding:28px 0}
+      .section h2{margin:0 0 12px;font-size:22px}
+      .muted{color:var(--muted);font-size:14px;margin-bottom:16px}
+      .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+      @media (max-width:1200px){.grid{grid-template-columns:repeat(4,1fr)}}
+      @media (max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}}
+      @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+      @media (max-width:380px){.grid{grid-template-columns:1fr}}
+      .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25)), var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s ease, box-shadow .15s ease}
+      .card:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(0,0,0,.32)}
+      .img-wrap{aspect-ratio:4/3;background:#0b1324;display:flex;align-items:center;justify-content:center}
+      .img-wrap img{width:100%;height:100%;object-fit:cover}
+      .info{padding:12px;display:grid;gap:6px}
+      .title{font-weight:600;font-size:16px}
+      .info .muted{font-size:15px}
+      .price{font-weight:700}
+      .price .inr{color:var(--ok)}
+      .add{margin-top:8px}
+
+      /* Compact mode */
+      .compact .grid{gap:8px}
+      .compact .info{padding:8px;gap:4px}
+      .compact .title{font-size:14px}
+      .compact .muted{font-size:13px}
+      .compact .btn{padding:8px 10px}
+
+      /* Footer */
+      footer{margin-top:28px;border-top:1px solid var(--border);background:var(--surface);padding:16px 0}
+      .footer-wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+      .social{display:flex;gap:12px}
+      .social a{color:var(--muted)}
+      .social a:hover{color:var(--text)}
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container nav">
+        <a class="brand" href="#">
+          <div class="logo" aria-hidden="true"></div>
+          <span>Online Store</span>
+        </a>
+        <nav class="menu" aria-label="Main navigation">
+          <a href="#">Home</a>
+          <a href="#shop">Shop</a>
+          <a href="#categories">Categories</a>
+          <a href="#cart">Cart</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div>
+          <h1>Shop smart. Save more.</h1>
+          <p>Discover top picks across categories. Clean design, great prices, fast checkout.</p>
+          <div class="cta">
+            <button class="btn primary" onclick="scrollToGrid()">Shop Now</button>
+            <a class="btn ghost" href="#categories">Browse Categories</a>
+          </div>
+        </div>
+        <div class="hero-art"></div>
+      </div>
+    </section>
+
+    <!-- Payment Section -->
+    <section class="container section" id="payment" style="display:none">
+      <h2>Payment</h2>
+      <div class="muted">Select a payment method and provide details</div>
+      <div style="margin-top:10px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card);padding:12px;display:grid;gap:10px">
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="payMethod" value="upi" checked> UPI</label>
+          <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="payMethod" value="card"> Card</label>
+          <label style="display:flex;align-items:center;gap:6px"><input type="radio" name="payMethod" value="cod"> Cash on Delivery</label>
+        </div>
+        <div id="payUpi" style="display:block">
+          <label class="muted" for="upiId">UPI ID</label>
+          <input id="upiId" placeholder="example@upi" style="padding:10px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px" />
+        </div>
+        <div id="payCard" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label class="muted" for="cardNumber">Card Number</label>
+              <input id="cardNumber" placeholder="4111 1111 1111 1111" style="padding:10px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px" />
+            </div>
+            <div>
+              <label class="muted" for="cardName">Name on Card</label>
+              <input id="cardName" placeholder="Full Name" style="padding:10px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px" />
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+            <div>
+              <label class="muted" for="cardExp">Expiry (MM/YY)</label>
+              <input id="cardExp" placeholder="08/27" style="padding:10px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px" />
+            </div>
+            <div>
+              <label class="muted" for="cardCvv">CVV</label>
+              <input id="cardCvv" placeholder="123" style="padding:10px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px" />
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="muted" for="shipAddress">Shipping Address</label>
+          <textarea id="shipAddress" rows="3" placeholder="Flat, Street, Area, City, PIN" style="padding:10px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" id="btnPay">Pay Now</button>
+          <button class="btn" id="btnCancelPay">Cancel</button>
+        </div>
+        <div class="muted" style="font-size:12px">Note: This is a demo. Do not enter real card details.</div>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <main class="container section" id="shop">
+      <h2>Featured Products</h2>
+      <div class="muted">Handpicked items just for you</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 8px">
+        <div class="muted">Items: <span id="filteredItems">0</span> of <span id="totalItems">0</span></div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn ghost" data-chip="all">All</button>
+            <button class="btn ghost" data-chip="electronics">Electronics</button>
+            <button class="btn ghost" data-chip="apparel">Apparel</button>
+            <button class="btn ghost" data-chip="essentials">Essentials</button>
+          </div>
+          <input id="searchBox" placeholder="Search products..." style="padding:8px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px;min-width:220px" />
+          <label class="muted" for="sortSel">Sort</label>
+          <select id="sortSel" style="padding:8px 10px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px">
+            <option value="relevance">Relevance</option>
+            <option value="plh">Price: Low to High</option>
+            <option value="phl">Price: High to Low</option>
+            <option value="az">Name: A → Z</option>
+            <option value="za">Name: Z → A</option>
+          </select>
+          <label class="muted" for="pageSize">Per page</label>
+          <select id="pageSize" style="padding:8px 10px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:10px">
+            <option>12</option>
+            <option selected>24</option>
+            <option>48</option>
+            <option>96</option>
+          </select>
+          <button class="btn" id="prevPage">Prev</button>
+          <div class="muted">Page <span id="pageNum">1</span> / <span id="pageTotal">1</span></div>
+          <button class="btn" id="nextPage">Next</button>
+          <button class="btn" id="reloadImgs">Reload images</button>
+          <label class="muted" for="compactToggle">Compact</label>
+          <input type="checkbox" id="compactToggle" />
+        </div>
+      </div>
+      <div class="grid" id="productGrid"></div>
+    </main>
+
+    <!-- Cart Section (visible) -->
+    <section class="container section" id="cart">
+      <h2>Your Cart</h2>
+      <div class="muted">Items you add will appear here</div>
+      <div id="cartList" style="margin-top:8px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card)">
+        <div id="cartEmpty" class="muted" style="padding:14px">Your cart is empty.</div>
+        <div id="cartItemsWrap" style="display:none">
+          <div id="cartRows"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding:12px">
+            <div class="muted">Subtotal</div>
+            <div id="cartTotal" style="font-weight:700"></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-top:1px solid var(--border)">
+            <button class="btn" id="btnClearCart">Clear</button>
+            <button class="btn primary" id="btnCheckout">Checkout</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container footer-wrap">
+        <div>© <span id="year"></span> Online Store</div>
+        <div class="social">
+          <a href="#" aria-label="Twitter">Twitter</a>
+          <a href="#" aria-label="Instagram">Instagram</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const INR = (n)=> `₹${Number(n).toLocaleString('en-IN')}`;
+      const TOTAL = 60000;
+      const seeds = [
+        'headphones','watch','speaker','shoes','backpack','mouse','stand','charger','band','glasses','keyboard','ssd','tv','phone','laptop',
+        'toothpaste','soap','shampoo','detergent','rice','flour','cooking-oil','tea','coffee','sugar','salt','biscuits','snacks','water-bottle','towel',
+        'notebook','pen','bulb','batteries','dishwash','handwash','sanitizer','napkins','diapers','baby-wipes','cat-food','dog-food','mop','broom','trash-bags','tissue-box',
+        'razor','hair-oil','conditioner','body-lotion',
+        'shirt','t-shirt','jeans','pants','trousers','kurta','saree','dress','hoodie','jacket','shorts','skirt','sweater','blazer','track-pants','ethnic-wear'
+      ];
+      const nouns = [
+        'Wireless Headphones','Smartwatch','Bluetooth Speaker','Running Shoes','Backpack','Wireless Mouse','Laptop Stand','USB‑C Charger','Fitness Band','Sunglasses','Gaming Keyboard','Portable SSD','Smart TV','Android Phone','Ultrabook Laptop',
+        'Toothpaste','Bath Soap','Shampoo','Laundry Detergent','Basmati Rice 5kg','Wheat Flour 5kg','Cooking Oil 1L','Tea Pack','Coffee Jar','Sugar 1kg','Iodized Salt','Assorted Biscuits','Snack Pack','Water Bottle 1L','Cotton Towel',
+        'Notebook A5','Ball Pen','LED Bulb 9W','AA Batteries (4)','Dishwashing Liquid','Handwash Refill','Sanitizer 100ml','Paper Napkins','Baby Diapers','Baby Wipes','Cat Food','Dog Food','Floor Mop','Broom','Trash Bags','Tissue Box',
+        'Shaving Razor','Hair Oil','Hair Conditioner','Body Lotion',
+        'Men Shirt','Men T‑Shirt','Jeans','Pants','Trousers','Men Kurta','Women Saree','Women Dress','Hoodie','Jacket','Shorts','Skirt','Sweater','Blazer','Track Pants','Ethnic Wear'
+      ];
+      const descs = ['Top rated','Best seller','New arrival','Limited offer','Great value','Budget pick','Premium build','Long battery','Fast charge','Lightweight','Daily essential','Home care','Apparel'];
+      const products = Array.from({length: TOTAL}, (_,i)=>{
+        const id = i+1;
+        const k = i % seeds.length;
+        const name = `${nouns[k]} #${id}`;
+        const price = Math.floor(399 + (i*13) % 95001); // 399 .. ~95400
+        const img = `https://picsum.photos/seed/${seeds[k]}-${id}/320/240`;
+        const desc = `${descs[(i*7)%descs.length]} • Item ${id}`;
+        return { id, name, price, img, desc };
+      });
+
+      let page = 1;
+      let pageSize = 24;
+      let searchQuery = '';
+      let chip = 'all';
+      let sortBy = 'relevance';
+      function getFiltered(){
+        let base = products;
+        // Category chip filter
+        if (chip === 'electronics') {
+          base = base.filter(p => /Headphones|Smartwatch|Speaker|TV|Phone|Laptop|SSD|Keyboard/i.test(p.name));
+        } else if (chip === 'apparel') {
+          base = base.filter(p => /Shirt|T‑Shirt|Jeans|Pants|Trousers|Dress|Hoodie|Jacket|Skirt|Sweater|Blazer|Track/i.test(p.name));
+        } else if (chip === 'essentials') {
+          base = base.filter(p => /Soap|Shampoo|Rice|Flour|Oil|Tea|Coffee|Sugar|Salt|Biscuits|Snacks|Detergent|Bulb|Batteries|Handwash|Sanitizer|Napkins|Tissue|Trash|Mop|Broom/i.test(p.name));
+        }
+        if (searchQuery){
+          const q = searchQuery.toLowerCase();
+          base = base.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+        }
+        // Sorting
+        const arr = base.slice();
+        if (sortBy === 'plh') arr.sort((a,b)=>a.price-b.price);
+        if (sortBy === 'phl') arr.sort((a,b)=>b.price-a.price);
+        if (sortBy === 'az') arr.sort((a,b)=>a.name.localeCompare(b.name));
+        if (sortBy === 'za') arr.sort((a,b)=>b.name.localeCompare(a.name));
+        return arr;
+      }
+      function setTotals(){
+        const all = products.length;
+        const filtered = getFiltered().length;
+        document.getElementById('totalItems').textContent = all.toLocaleString();
+        document.getElementById('filteredItems').textContent = filtered.toLocaleString();
+        document.getElementById('pageTotal').textContent = Math.max(1, Math.ceil(filtered/pageSize)).toLocaleString();
+        document.getElementById('pageNum').textContent = page.toLocaleString();
+      }
+
+      function renderGrid(){
+        const grid = document.getElementById('productGrid');
+        const start = (page-1)*pageSize;
+        const filtered = getFiltered();
+        const maxPage = Math.max(1, Math.ceil(filtered.length / pageSize));
+        if (page > maxPage) page = maxPage;
+        const slice = filtered.slice((page-1)*pageSize, (page-1)*pageSize + pageSize);
+        grid.innerHTML = slice.map(p=>{
+          const seed = seeds[(p.id-1)%seeds.length];
+          const svg = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='320' height='240'><rect width='100%' height='100%' fill='#0f1626'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#9fb0c3' font-family='Inter, sans-serif' font-size='14'>Image unavailable</text></svg>`);
+          const finalFallback = `data:image/svg+xml,${svg}`;
+          return `
+          <article class="card" data-id="${p.id}">
+            <div class="info">
+              <div class="title">${p.name}</div>
+              <div class="muted">${p.desc}</div>
+              <div class="price"><span class="inr">${INR(p.price)}</span></div>
+              <div class="add"><button class="btn" onclick="addToCart(${p.id})">Add to Cart</button></div>
+            </div>
+          </article>`;
+        }).join('');
+        setTotals();
+      }
+
+      const CART_KEY = 'online_store_cart_v1';
+      let cart = [];
+      function loadCart(){ try{ cart = JSON.parse(localStorage.getItem(CART_KEY)||'[]'); } catch { cart=[]; } }
+      function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+      function renderCart(){
+        const empty = document.getElementById('cartEmpty');
+        const wrap = document.getElementById('cartItemsWrap');
+        const rows = document.getElementById('cartRows');
+        const total = document.getElementById('cartTotal');
+        if (!cart.length){
+          empty.style.display = 'block';
+          wrap.style.display = 'none';
+          return;
+        }
+        empty.style.display = 'none';
+        wrap.style.display = 'block';
+        rows.innerHTML = cart.map((c,idx)=>{
+          const seed = seeds[(c.id-1)%seeds.length];
+          const img = `https://picsum.photos/seed/${seed}-${c.id}/96/72`;
+          return `<div style="display:grid;grid-template-columns:88px 1fr auto;gap:10px;align-items:center;border-top:${idx? '1px solid var(--border)':'none'};padding:10px 12px">
+            <img src="${img}" alt="${c.name}" style="width:88px;height:66px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+            <div>
+              <div class="title">${c.name}</div>
+              <div class="muted">${INR(c.price)}</div>
+              <div class="qty" style="margin-top:6px;display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:8px">
+                <button data-act="dec" data-id="${c.id}">−</button>
+                <span style="min-width:28px;text-align:center">${c.qty}</span>
+                <button data-act="inc" data-id="${c.id}">+</button>
+              </div>
+            </div>
+            <button class="btn" data-act="remove" data-id="${c.id}">Remove</button>
+          </div>`;
+        }).join('');
+        const subtotal = cart.reduce((a,c)=>a + c.price*c.qty, 0);
+        total.textContent = INR(subtotal);
+      }
+      function addToCart(id){
+        const p = products.find(x=>x.id===id); if(!p) return;
+        const existing = cart.find(c=>c.id===id);
+        if (existing) existing.qty += 1; else cart.push({ id:p.id, name:p.name, price:p.price, qty:1 });
+        saveCart(); renderCart();
+        document.getElementById('cart').scrollIntoView({behavior:'smooth'});
+      }
+      function onCartSectionClick(e){
+        const act = e.target.dataset.act; if (!act) return;
+        const id = Number(e.target.dataset.id);
+        const item = cart.find(c=>c.id===id); if(!item) return;
+        if (act==='inc') item.qty += 1;
+        if (act==='dec') item.qty = Math.max(1, item.qty-1);
+        if (act==='remove') cart = cart.filter(c=>c.id!==id);
+        saveCart(); renderCart();
+      }
+
+      function scrollToGrid(){ document.getElementById('shop').scrollIntoView({behavior:'smooth'}); }
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const prevBtn = document.getElementById('prevPage');
+      const nextBtn = document.getElementById('nextPage');
+      const pageSizeSel = document.getElementById('pageSize');
+      const compactToggle = document.getElementById('compactToggle');
+      const reloadBtn = document.getElementById('reloadImgs');
+      const cartSection = document.getElementById('cart');
+      const btnClearCart = document.getElementById('btnClearCart');
+      const btnCheckout = document.getElementById('btnCheckout');
+      const searchBox = document.getElementById('searchBox');
+      const sortSel = document.getElementById('sortSel');
+      const chips = document.getElementById('chips');
+      function debounce(fn, d=250){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), d); }; }
+      const onSearch = debounce(()=>{ searchQuery = searchBox.value.trim(); page = 1; renderGrid(); }, 200);
+      sortSel.addEventListener('change', ()=>{ sortBy = sortSel.value; page = 1; renderGrid(); });
+      chips.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button[data-chip]');
+        if (!btn) return;
+        chip = btn.dataset.chip;
+        // Visual active state
+        chips.querySelectorAll('button').forEach(b=> b.style.outline='none');
+        btn.style.outline = '2px solid #4f8cff';
+        page = 1; renderGrid();
+      });
+      prevBtn.addEventListener('click', ()=>{ if (page>1){ page--; renderGrid(); window.scrollTo({top:document.getElementById('shop').offsetTop-60, behavior:'smooth'}); } });
+      nextBtn.addEventListener('click', ()=>{ const max = Math.ceil(products.length/pageSize); if (page<max){ page++; renderGrid(); window.scrollTo({top:document.getElementById('shop').offsetTop-60, behavior:'smooth'}); } });
+      pageSizeSel.addEventListener('change', ()=>{ pageSize = parseInt(pageSizeSel.value,10)||24; page = 1; renderGrid(); });
+      compactToggle.addEventListener('change', ()=>{ document.body.classList.toggle('compact', compactToggle.checked); });
+      reloadBtn.addEventListener('click', ()=>{
+        document.querySelectorAll('#productGrid img').forEach(img=>{
+          img.removeAttribute('src');
+          img.removeAttribute('data-step');
+          img.removeAttribute('data-loaded');
+          if (img.dataset.src){
+            ensureObserver();
+            io.observe(img);
+          }
+        });
+      });
+      cartSection.addEventListener('click', onCartSectionClick);
+      btnClearCart.addEventListener('click', ()=>{ cart=[]; saveCart(); renderCart(); });
+      btnCheckout.addEventListener('click', ()=>{
+        if (!cart.length){ alert('Your cart is empty.'); return; }
+        document.getElementById('payment').style.display = 'block';
+        document.getElementById('payment').scrollIntoView({behavior:'smooth'});
+      });
+      // Payment logic
+      function syncMethod(){
+        const v = document.querySelector('input[name="payMethod"]:checked')?.value || 'upi';
+        document.getElementById('payUpi').style.display = v==='upi' ? 'block' : 'none';
+        document.getElementById('payCard').style.display = v==='card' ? 'block' : 'none';
+      }
+      document.querySelectorAll('input[name="payMethod"]').forEach(r=> r.addEventListener('change', syncMethod));
+      syncMethod();
+      document.getElementById('btnCancelPay').addEventListener('click', ()=>{
+        document.getElementById('payment').style.display = 'none';
+        document.getElementById('cart').scrollIntoView({behavior:'smooth'});
+      });
+      document.getElementById('btnPay').addEventListener('click', ()=>{
+        if (!cart.length){ alert('Your cart is empty.'); return; }
+        const method = document.querySelector('input[name="payMethod"]:checked')?.value || 'upi';
+        const addr = document.getElementById('shipAddress').value.trim();
+        if (!addr){ alert('Please enter shipping address.'); return; }
+        if (method==='upi'){
+          const upi = document.getElementById('upiId').value.trim();
+          if (!upi || !upi.includes('@')){ alert('Enter a valid UPI ID.'); return; }
+        }
+        if (method==='card'){
+          const num = document.getElementById('cardNumber').value.replace(/\s+/g,'');
+          const name = document.getElementById('cardName').value.trim();
+          const exp = document.getElementById('cardExp').value.trim();
+          const cvv = document.getElementById('cardCvv').value.trim();
+          if (num.length < 12 || !name || !/\d{2}\/\d{2}/.test(exp) || cvv.length < 3){
+            alert('Please fill valid card details.'); return;
+          }
+        }
+        // Simulate success
+        const amount = cart.reduce((a,c)=>a + c.price*c.qty, 0);
+        alert(`Payment successful! Paid ${INR(amount)} via ${method.toUpperCase()}. Thank you!`);
+        cart = []; saveCart(); renderCart();
+        document.getElementById('payment').style.display = 'none';
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+      searchBox.addEventListener('input', onSearch);
+      loadCart(); renderCart(); renderGrid();
+    </script>
+  </body>
+  </html>

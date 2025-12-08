@@ -1,0 +1,621 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payroll Assistant</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #121a2b;
+        --muted: #9fb0c3;
+        --text: #e7eef8;
+        --accent: #4f8cff;
+        --accent-2: #22c55e;
+        --danger: #ef4444;
+        --border: #22314b;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 600px at 10% -10%, #1d2950 0%, #0b1020 50%), var(--bg);
+        color: var(--text);
+      }
+      .wrap { max-width: 1024px; margin: 32px auto; padding: 0 16px; }
+      header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+      h1 { font-size: 22px; margin: 0; letter-spacing: 0.2px; }
+      .tag { font-size: 12px; color: var(--muted); }
+      .card { background: linear-gradient(180deg, #121a2b 0%, #0f1626 100%); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+      .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; }
+      @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
+      .left, .right { padding: 16px; }
+      .section-title { font-size: 13px; color: var(--muted); margin: 16px 0 10px; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      @media (max-width: 640px){ .row{ grid-template-columns: 1fr; } }
+      label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+      input, select { width: 100%; padding: 10px 12px; background: #0c1424; color: var(--text); border: 1px solid var(--border); border-radius: 10px; outline: none; }
+      input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,140,255,.15); }
+      .muted { color: var(--muted); font-size: 12px; }
+      .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+      button { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: #0c1424; color: var(--text); cursor: pointer; }
+      .primary { background: linear-gradient(180deg, #4f8cff, #3d76e6); border-color: #3d76e6; }
+      .ghost { background: transparent; }
+      .notice { font-size: 12px; color: var(--muted); padding: 10px; border: 1px dashed var(--border); border-radius: 10px; background: #0c1424; }
+      table { width: 100%; border-collapse: collapse; background: #0c1424; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+      th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+      th { text-align: left; color: var(--muted); font-weight: 600; background: #0f1626; }
+      tr:last-child td{ border-bottom: none; }
+      .success { color: #22c55e; }
+      .danger { color: var(--danger); }
+      .hidden { display: none !important; }
+      footer { margin-top: 14px; font-size: 12px; color: var(--muted); text-align: center; }
+      .chat { display: flex; flex-direction: column; gap: 10px; }
+      .chatlog { height: 260px; overflow: auto; background: #0c1424; border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+      .msg { margin: 6px 0; }
+      .msg .role { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+      .bubble { display: inline-block; padding: 8px 10px; border-radius: 10px; background: #0f1626; }
+      .msg.user { text-align: right; }
+      .msg.user .bubble { background: #193055; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Payroll Assistant</h1>
+        <div class="tag">Professional • Clear • Secure</div>
+      </header>
+
+      <div class="card grid">
+        <div class="left">
+          <div class="row">
+            <div>
+              <label for="task">What do you need</label>
+              <select id="task">
+                <option value="salary">Salary breakdown</option>
+                <option value="overtime">Overtime</option>
+                <option value="leave">Leave encashment</option>
+                <option value="attendance">Attendance / LOP</option>
+              </select>
+            </div>
+            <div>
+              <label for="period">Pay period</label>
+              <input id="period" placeholder="e.g., Nov 2025" />
+            </div>
+          </div>
+
+          <div class="section-title">Employee & policy inputs</div>
+
+          <div id="section-salary" class="section">
+            <div class="row">
+              <div>
+                <label for="gross">Monthly gross</label>
+                <input id="gross" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+              <div>
+                <label for="basicPct">Basic % of Gross</label>
+                <input id="basicPct" type="number" min="0" max="100" step="0.01" placeholder="40" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="hraPct">HRA % of Basic</label>
+                <input id="hraPct" type="number" min="0" max="100" step="0.01" placeholder="40" />
+              </div>
+              <div>
+                <label for="otherFixed">Other fixed allowances (optional)</label>
+                <input id="otherFixed" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="pfPct">PF employee % (on wage base)</label>
+                <input id="pfPct" type="number" min="0" max="100" step="0.01" placeholder="12" />
+              </div>
+              <div>
+                <label for="pfWageBase">PF wage base cap</label>
+                <input id="pfWageBase" type="number" min="0" step="0.01" placeholder="15000" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="esiPct">ESI % (employee)</label>
+                <input id="esiPct" type="number" min="0" max="100" step="0.01" placeholder="0.75" />
+              </div>
+              <div>
+                <label for="esiApply">ESI applicable?</label>
+                <select id="esiApply">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="pt">Professional Tax (monthly)</label>
+                <input id="pt" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+              <div>
+                <label for="tds">TDS (monthly)</label>
+                <input id="tds" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+            </div>
+          </div>
+
+          <div id="section-overtime" class="section hidden">
+            <div class="row">
+              <div>
+                <label for="otRate">Base hourly rate</label>
+                <input id="otRate" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+              <div>
+                <label for="otHours">Overtime hours</label>
+                <input id="otHours" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="otMultiplier">Overtime rate multiplier</label>
+                <input id="otMultiplier" type="number" min="0" step="0.01" placeholder="1.5" />
+              </div>
+              <div>
+                <label for="otTax">Tax/TDS on OT (optional)</label>
+                <input id="otTax" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+            </div>
+          </div>
+
+          <div id="section-leave" class="section hidden">
+            <div class="row">
+              <div>
+                <label for="leaveBasis">Encashment basis</label>
+                <select id="leaveBasis">
+                  <option value="basic">Basic</option>
+                  <option value="gross">Gross</option>
+                </select>
+              </div>
+              <div>
+                <label for="leaveMonthly">Monthly amount for basis</label>
+                <input id="leaveMonthly" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="leaveDays">Leave days to encash</label>
+                <input id="leaveDays" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+              <div>
+                <label for="leaveDivisor">Per-day divisor</label>
+                <select id="leaveDivisor">
+                  <option value="26">26</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="section-attendance" class="section hidden">
+            <div class="row">
+              <div>
+                <label for="monthDays">Working days in month</label>
+                <input id="monthDays" type="number" min="0" step="1" placeholder="26" />
+              </div>
+              <div>
+                <label for="presentDays">Present days</label>
+                <input id="presentDays" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="grossForLop">Monthly gross for LOP</label>
+                <input id="grossForLop" type="number" min="0" step="0.01" placeholder="0" />
+              </div>
+              <div>
+                <label for="lopDivisor">Per-day divisor</label>
+                <select id="lopDivisor">
+                  <option value="26">26</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="ghost" id="clearBtn">Clear</button>
+            <button class="primary" id="calcBtn">Calculate</button>
+          </div>
+
+          <div class="notice" style="margin-top:12px">
+            For privacy and security reasons, I cannot access personal payroll records. Provide only the details you’re comfortable sharing or contact HR.
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="section-title">Result</div>
+          <div id="resultPanel">
+            <table id="resultTable" class="hidden">
+              <thead>
+                <tr><th>Component</th><th style="text-align:right">Amount</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div id="resultNote" class="muted">Fill inputs and click Calculate. I’ll ask for missing details if needed.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="left">
+          <div class="section-title">Chatbot (API)</div>
+          <div class="chat">
+            <div class="row">
+              <div>
+                <label for="chatMode">Mode</label>
+                <select id="chatMode">
+                  <option value="openai">OpenAI (API key)</option>
+                  <option value="local">Local (no API key)</option>
+                </select>
+              </div>
+              <div>
+                <label for="apiKey">OpenAI API Key</label>
+                <input id="apiKey" type="password" placeholder="sk-..." />
+              </div>
+              <div>
+                <label for="model">Model</label>
+                <select id="model">
+                  <option value="gpt-4o-mini">gpt-4o-mini</option>
+                  <option value="gpt-4o">gpt-4o</option>
+                  <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                </select>
+              </div>
+            </div>
+            <div class="chatlog" id="chatLog"></div>
+            <div class="row">
+              <div>
+                <label for="chatInput">Your message</label>
+                <input id="chatInput" placeholder="Ask payroll questions..." />
+              </div>
+              <div class="actions" style="align-items:end; justify-content:flex-end;">
+                <button class="ghost" id="clearChatBtn">Clear Chat</button>
+                <button class="primary" id="sendBtn">Send</button>
+              </div>
+            </div>
+            <div class="notice">Do not share confidential data. Keys entered here are used only in your browser. For production, use a secure server proxy.</div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        Built for quick, clear payroll calculations. No company-specific assumptions are made.
+      </footer>
+    </div>
+
+    <script>
+      const el = (id) => document.getElementById(id);
+      const fmt = (n) => {
+        if (Number.isNaN(n) || !Number.isFinite(n)) return '-';
+        return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      };
+
+      const task = el('task');
+      const sections = {
+        salary: el('section-salary'),
+        overtime: el('section-overtime'),
+        leave: el('section-leave'),
+        attendance: el('section-attendance'),
+      };
+
+      function switchSection() {
+        Object.values(sections).forEach(s => s.classList.add('hidden'));
+        (sections[task.value] || sections.salary).classList.remove('hidden');
+        clearResult();
+      }
+      task.addEventListener('change', switchSection);
+      switchSection();
+
+      function setTable(rows, totalRowTitle){
+        const tbl = el('resultTable');
+        const tbody = tbl.querySelector('tbody');
+        tbody.innerHTML = '';
+        rows.forEach(r => {
+          const tr = document.createElement('tr');
+          const td1 = document.createElement('td'); td1.textContent = r.label;
+          const td2 = document.createElement('td'); td2.style.textAlign = 'right'; td2.textContent = fmt(r.value);
+          if (r.className) td2.className = r.className;
+          tr.appendChild(td1); tr.appendChild(td2);
+          tbody.appendChild(tr);
+        });
+        el('resultNote').textContent = totalRowTitle || '';
+        tbl.classList.remove('hidden');
+      }
+
+      function clearResult(){
+        el('resultTable').classList.add('hidden');
+        el('resultNote').textContent = 'Fill inputs and click Calculate. I’ll ask for missing details if needed.';
+      }
+
+      el('clearBtn').addEventListener('click', () => {
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        document.querySelectorAll('select').forEach(s => {
+          if (s.id === 'task') return; // keep task
+          if (s.id === 'esiApply') s.value = 'no';
+        });
+        clearResult();
+      });
+
+      function need(v, name){
+        if (v === '' || v === null || Number.isNaN(+v)) throw new Error(`Please provide ${name}.`);
+        return +v;
+      }
+
+      function calcSalary(){
+        const gross = need(el('gross').value, 'Monthly gross');
+        const basicPct = need(el('basicPct').value, 'Basic % of Gross');
+        const hraPct = need(el('hraPct').value, 'HRA % of Basic');
+
+        const otherFixed = +(el('otherFixed').value || 0);
+        const pfPct = +(el('pfPct').value || 0);
+        const pfWageBase = +(el('pfWageBase').value || 0);
+        const esiPct = +(el('esiPct').value || 0);
+        const esiApply = el('esiApply').value === 'yes';
+        const pt = +(el('pt').value || 0);
+        const tds = +(el('tds').value || 0);
+
+        const basic = gross * (basicPct/100);
+        const hra = basic * (hraPct/100);
+        // If otherFixed is provided (>0), use it; else compute residual as other allowances.
+        const otherAllow = otherFixed > 0 ? otherFixed : Math.max(0, gross - basic - hra);
+        const earnings = basic + hra + otherAllow;
+
+        const pfBase = pfWageBase > 0 ? Math.min(basic, pfWageBase) : basic;
+        const pfEmp = pfBase * (pfPct/100);
+        const esiEmp = esiApply ? (gross * (esiPct/100)) : 0;
+        const deductions = pfEmp + esiEmp + pt + tds;
+        const net = earnings - deductions;
+
+        const rows = [
+          { label: 'Basic', value: basic },
+          { label: 'HRA', value: hra },
+          { label: 'Other Allowances', value: otherAllow },
+          { label: 'Gross Earnings', value: earnings, className: 'success' },
+          { label: 'PF (Employee)', value: pfEmp },
+          { label: 'ESI (Employee)', value: esiEmp },
+          { label: 'Professional Tax', value: pt },
+          { label: 'TDS', value: tds },
+          { label: 'Total Deductions', value: deductions, className: 'danger' },
+          { label: 'Net Pay', value: net, className: 'success' },
+        ];
+        setTable(rows, 'Note: PF/ESI/PT/TDS are based on your inputs. No company-specific assumptions made.');
+      }
+
+      function calcOvertime(){
+        const rate = need(el('otRate').value, 'Base hourly rate');
+        const hours = need(el('otHours').value, 'Overtime hours');
+        const mult = need(el('otMultiplier').value, 'Overtime rate multiplier');
+        const tax = +(el('otTax').value || 0);
+
+        const gross = rate * hours * mult;
+        const net = Math.max(0, gross - tax);
+        const rows = [
+          { label: 'Base Hourly Rate', value: rate },
+          { label: 'Overtime Hours', value: hours },
+          { label: 'Multiplier', value: mult },
+          { label: 'Overtime Gross', value: gross, className: 'success' },
+          { label: 'Tax/TDS (input)', value: tax },
+          { label: 'Overtime Net', value: net, className: 'success' },
+        ];
+        setTable(rows, 'If your company has a specific OT policy (e.g., 2x after 9 hours), enter the matching multiplier.');
+      }
+
+      function calcLeave(){
+        const basisMonthly = need(el('leaveMonthly').value, 'Monthly amount for basis');
+        const days = need(el('leaveDays').value, 'Leave days to encash');
+        const divisor = +el('leaveDivisor').value;
+        const perDay = basisMonthly / divisor;
+        const encash = perDay * days;
+        setTable([
+          { label: 'Monthly Basis Amount', value: basisMonthly },
+          { label: `Per-day (${divisor} divisor)`, value: perDay },
+          { label: 'Days to Encash', value: days },
+          { label: 'Encashment Amount', value: encash, className: 'success' },
+        ], 'Confirm with HR whether encashment is on Basic or Gross and which divisor (26/30) applies.');
+      }
+
+      function calcAttendance(){
+        const working = need(el('monthDays').value, 'Working days in month');
+        const present = need(el('presentDays').value, 'Present days');
+        const divisor = +el('lopDivisor').value;
+        const gross = need(el('grossForLop').value, 'Monthly gross for LOP');
+        const lopDays = Math.max(0, working - present);
+        const perDay = gross / divisor;
+        const lopAmt = perDay * lopDays;
+        const payableDays = Math.min(present, working);
+        setTable([
+          { label: 'Working Days', value: working },
+          { label: 'Present Days', value: present },
+          { label: 'LOP Days', value: lopDays, className: 'danger' },
+          { label: `Per-day (${divisor} divisor)`, value: perDay },
+          { label: 'LOP Amount', value: lopAmt, className: 'danger' },
+          { label: 'Payable Days', value: payableDays, className: 'success' },
+        ], 'Confirm company LOP rules (divisor and whether variable components are prorated).');
+      }
+
+      el('calcBtn').addEventListener('click', () => {
+        try{
+          const mode = task.value;
+          if (mode === 'salary') return calcSalary();
+          if (mode === 'overtime') return calcOvertime();
+          if (mode === 'leave') return calcLeave();
+          if (mode === 'attendance') return calcAttendance();
+        } catch (e){
+          el('resultNote').textContent = e.message;
+          el('resultTable').classList.add('hidden');
+        }
+      });
+
+      const chatLog = el('chatLog');
+      const apiKeyEl = el('apiKey');
+      const modelEl = el('model');
+      const chatInput = el('chatInput');
+      const sendBtn = el('sendBtn');
+      const clearChatBtn = el('clearChatBtn');
+      const chatModeEl = el('chatMode');
+
+      const systemPrompt = `Role: You are a professional Payroll Management Assistant AI. Goal: Assist employees and HR teams with payroll-related questions politely, accurately, and securely. Tone: Professional, clear, supportive, friendly, concise. Scope: salary breakdowns, overtime, payslip explanations, leave encashment, attendance, Income Tax/TDS/PF/ESI/Gratuity (based on provided rules), explain terms simply, policy FAQs when policy is provided. Behavior: ask clarifying questions if details are missing; never assume company-specific policies—ask for rules first; if asked about confidential data, say "For privacy and security reasons, I cannot access personal payroll records. Please provide the details you have or contact HR." Keep messages short, structured, easy to understand. Use tables for salary breakdowns.`;
+
+      const messages = [
+        { role: 'system', content: systemPrompt }
+      ];
+
+      function appendMsg(role, content){
+        const div = document.createElement('div');
+        div.className = `msg ${role === 'user' ? 'user' : 'assistant'}`;
+        const roleEl = document.createElement('div');
+        roleEl.className = 'role';
+        roleEl.textContent = role === 'user' ? 'You' : 'Assistant';
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = content;
+        div.appendChild(roleEl);
+        div.appendChild(bubble);
+        chatLog.appendChild(div);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function localComputeSalaryTemplate(){
+        return (
+`Please share: monthly gross, basic % of gross, HRA % of basic, PF% and wage base, ESI applicability and %, PT, TDS.
+
+Sample breakdown (fill with your values):
+| Component | Monthly Amount |\n|---|---:|\n| Basic | 0 |\n| HRA | 0 |\n| Other Allowances | 0 |\n| Gross Earnings | 0 |\n| PF (Employee) | 0 |\n| ESI (Employee) | 0 |\n| Professional Tax | 0 |\n| TDS | 0 |\n| Total Deductions | 0 |\n| Net Pay | 0 |`
+        );
+      }
+
+      function getNumbers(text){
+        return (text.match(/[-+]?[0-9]*\.?[0-9]+/g) || []).map(Number);
+      }
+
+      function localOvertime(text){
+        const nums = getNumbers(text);
+        let rate, hours, mult = 1.5, tax = 0;
+        if (nums.length >= 2){ rate = nums[0]; hours = nums[1]; }
+        if (nums.length >= 3){ mult = nums[2]; }
+        if (nums.length >= 4){ tax = nums[3]; }
+        if (rate == null || hours == null){
+          return 'Provide: hourly rate, OT hours, optional multiplier and tax. Example: rate 300, hours 10, multiplier 2, tax 200.';
+        }
+        const gross = rate * hours * mult;
+        const net = Math.max(0, gross - tax);
+        return `Overtime Gross: ${fmt(gross)} | Tax: ${fmt(tax)} | Net: ${fmt(net)}`;
+      }
+
+      function localLeave(text){
+        const nums = getNumbers(text);
+        let monthly, days, divisor = 26;
+        if (nums.length >= 1) monthly = nums[0];
+        if (nums.length >= 2) days = nums[1];
+        if (nums.length >= 3) divisor = nums[2];
+        if (monthly == null || days == null){
+          return 'Provide: basis monthly amount, leave days, optional divisor (26/30). Example: basis 25000, days 5, divisor 26.';
+        }
+        const perDay = monthly / divisor;
+        const amt = perDay * days;
+        return `Per-day (${divisor}): ${fmt(perDay)} | Encashment: ${fmt(amt)}`;
+      }
+
+      function localAttendance(text){
+        const nums = getNumbers(text);
+        let working, present, gross, divisor = 26;
+        if (nums.length >= 1) working = nums[0];
+        if (nums.length >= 2) present = nums[1];
+        if (nums.length >= 3) gross = nums[2];
+        if (nums.length >= 4) divisor = nums[3];
+        if (working == null || present == null || gross == null){
+          return 'Provide: working days, present days, monthly gross, optional divisor (26/30). Example: working 26, present 22, gross 60000, divisor 26.';
+        }
+        const lopDays = Math.max(0, working - present);
+        const perDay = gross / divisor;
+        const lopAmt = perDay * lopDays;
+        return `LOP Days: ${fmt(lopDays)} | Per-day (${divisor}): ${fmt(perDay)} | LOP Amount: ${fmt(lopAmt)}`;
+      }
+
+      function localPayslip(){
+        return 'Payslip typically includes: Earnings (Basic, HRA, allowances), Deductions (PF, ESI, PT, TDS), Net Pay, Taxable components, YTD. Share your payslip lines if you want an explanation.';
+      }
+
+      function localPolicy(text){
+        if (/pf|provident\s*fund/i.test(text)) return 'PF: share employee % and wage base cap. Example: 12% on basic up to 15,000. I will compute PF based on your inputs.';
+        if (/esi/i.test(text)) return 'ESI: share applicability and employee %. I will compute only if applicable as per your inputs.';
+        if (/tds|tax/i.test(text)) return 'TDS: share tax regime (old/new), exemptions, and projected annual income. I can estimate monthly TDS when you provide slabs/policy.';
+        return '';
+      }
+
+      function localReply(text){
+        const lower = text.toLowerCase();
+        if (/privacy|confidential|access.*record/.test(lower)){
+          return 'For privacy and security reasons, I cannot access personal payroll records. Please provide the details you have or contact HR.';
+        }
+        if (/overtime|ot\b/.test(lower)) return localOvertime(text);
+        if (/leave|encash/.test(lower)) return localLeave(text);
+        if (/attendance|lop/.test(lower)) return localAttendance(text);
+        if (/payslip/.test(lower)) return localPayslip();
+        if (/salary|breakdown|ctc|gross|hra|basic/.test(lower)) return localComputeSalaryTemplate();
+        const policy = localPolicy(text);
+        if (policy) return policy;
+        return 'Please specify: salary breakdown, overtime, leave encashment, attendance/LOP, payslip, or PF/ESI/TDS. I will ask for missing details and keep it concise.';
+      }
+
+      async function sendChat(){
+        const mode = chatModeEl.value;
+        const apiKey = apiKeyEl.value.trim();
+        const model = modelEl.value;
+        const text = chatInput.value.trim();
+        if (!text) return;
+        appendMsg('user', text);
+        messages.push({ role: 'user', content: text });
+        chatInput.value = '';
+
+        if (mode === 'local' || !apiKey){
+          const reply = localReply(text);
+          appendMsg('assistant', reply);
+          messages.push({ role: 'assistant', content: reply });
+          return;
+        }
+
+        sendBtn.disabled = true;
+        try{
+          const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({ model, messages, temperature: 0.2 })
+          });
+          if (!res.ok) {
+            const t = await res.text();
+            appendMsg('assistant', `API error: ${res.status} ${t}`);
+            return;
+          }
+          const data = await res.json();
+          const reply = data.choices?.[0]?.message?.content?.trim() || 'No response';
+          messages.push({ role: 'assistant', content: reply });
+          appendMsg('assistant', reply);
+        } catch(err){
+          appendMsg('assistant', `Network error: ${err.message}`);
+        } finally {
+          sendBtn.disabled = false;
+        }
+      }
+
+      sendBtn.addEventListener('click', sendChat);
+      chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+      clearChatBtn.addEventListener('click', () => {
+        chatLog.innerHTML = '';
+        messages.splice(1);
+      });
+    </script>
+  </body>
+</html>
+

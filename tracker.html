@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EngiTrack - Weekly Planner</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --accent: #00adb5;
+            --danger: #ff4d4d;
+            --success: #00c853;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { margin-bottom: 20px; color: var(--accent); }
+
+        /* Input Section */
+        .input-group {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            max-width: 800px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background: #2c2c2c;
+            color: white;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--accent);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: #121212;
+            transition: transform 0.1s;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        /* Grid Layout for Days */
+        .week-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .day-column {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 200px;
+        }
+
+        .day-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+
+        /* Task Items */
+        .task-item {
+            background: #2a2a2a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent);
+        }
+
+        .task-info { display: flex; flex-direction: column; gap: 4px; }
+        .task-name { font-weight: 500; }
+        
+        /* Category Badges */
+        .badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            width: fit-content;
+        }
+        .cat-lecture { background: #5c6bc0; color: white; }
+        .cat-lab { background: #ffca28; color: black; }
+        .cat-assignment { background: #ef5350; color: white; }
+        .cat-project { background: #ab47bc; color: white; }
+
+        /* Actions */
+        .actions button {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        .btn-check { background: var(--success); color: white; }
+        .btn-delete { background: var(--danger); color: white; }
+
+        /* Completed State */
+        .completed {
+            opacity: 0.5;
+            text-decoration: line-through;
+            border-left-color: var(--success);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>ENGINEERING WEEKLY TRACKER</h1>
+
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Enter task (e.g., Circuit Analysis Lab)" style="flex-grow: 2;">
+        
+        <select id="dayInput">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+        </select>
+
+        <select id="categoryInput">
+            <option value="Lecture">Lecture</option>
+            <option value="Lab">Lab</option>
+            <option value="Assignment">Assignment</option>
+            <option value="Project">Project</option>
+        </select>
+
+        <button onclick="addTask()">+ Add Task</button>
+    </div>
+
+    <div class="week-container" id="weekContainer">
+        </div>
+
+    <script>
+        // 1. Setup State
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        let tasks = JSON.parse(localStorage.getItem('engTasks')) || [];
+
+        // 2. Initialize View
+        function init() {
+            const container = document.getElementById('weekContainer');
+            container.innerHTML = ''; // Clear current view
+
+            days.forEach(day => {
+                const column = document.createElement('div');
+                column.className = 'day-column';
+                column.innerHTML = `<div class="day-header">${day}</div><div id="list-${day}"></div>`;
+                container.appendChild(column);
+            });
+
+            renderTasks();
+        }
+
+        // 3. Render Tasks
+        function renderTasks() {
+            // Clear all day lists first
+            days.forEach(day => document.getElementById(`list-${day}`).innerHTML = '');
+
+            tasks.forEach((task, index) => {
+                const list = document.getElementById(`list-${task.day}`);
+                if (list) {
+                    const taskEl = document.createElement('div');
+                    taskEl.className = `task-item ${task.completed ? 'completed' : ''}`;
+                    
+                    // Determine Badge Color Class
+                    const catClass = `cat-${task.category.toLowerCase()}`;
+
+                    taskEl.innerHTML = `
+                        <div class="task-info">
+                            <span class="task-name">${task.name}</span>
+                            <span class="badge ${catClass}">${task.category}</span>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-check" onclick="toggleComplete(${index})">✓</button>
+                            <button class="btn-delete" onclick="deleteTask(${index})">✕</button>
+                        </div>
+                    `;
+                    list.appendChild(taskEl);
+                }
+            });
+        }
+
+        // 4. Add Task Function
+        function addTask() {
+            const nameInput = document.getElementById('taskInput');
+            const dayInput = document.getElementById('dayInput');
+            const catInput = document.getElementById('categoryInput');
+
+            if (nameInput.value.trim() === '') return alert("Please enter a task name");
+
+            const newTask = {
+                name: nameInput.value,
+                day: dayInput.value,
+                category: catInput.value,
+                completed: false
+            };
+
+            tasks.push(newTask);
+            saveAndRender();
+            nameInput.value = ''; // Reset input
+        }
+
+        // 5. Task Actions
+        function toggleComplete(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveAndRender();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveAndRender();
+        }
+
+        // 6. Storage Helper
+        function saveAndRender() {
+            localStorage.setItem('engTasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>

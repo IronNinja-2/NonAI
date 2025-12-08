@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Attendance Management System</title>
+    <style>
+      :root{
+        --bg:#0b1020; --surface:#121a2b; --surface-2:#0f1626; --text:#e7eef8; --muted:#9fb0c3; --accent:#4f8cff; --border:#22314b; --ok:#22c55e; --warn:#f59e0b; --err:#ef4444;
+      }
+      *{box-sizing:border-box}
+      body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 600px at 10% -10%, #1d2950 0%, #0b1020 50%),var(--bg);color:var(--text)}
+      a{color:inherit;text-decoration:none}
+      .container{max-width:1280px;margin:0 auto;padding:28px}
+      header{position:sticky;top:0;background:linear-gradient(180deg,var(--surface) 0%, rgba(18,26,43,0.9) 100%);border-bottom:1px solid var(--border);backdrop-filter:blur(6px);z-index:10}
+      .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+      .brand{display:flex;align-items:center;gap:10px}
+      .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(180deg,#4f8cff,#3d76e6)}
+      h1{margin:0;font-size:26px}
+
+      .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.25)), var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:20px}
+      .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+      @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .field{display:grid;gap:6px}
+      label{color:var(--muted);font-size:13px}
+      input, select, textarea{padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:15px}
+      textarea{min-height:72px}
+      .btn{padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));color:var(--text);cursor:pointer}
+      .btn.primary{background:linear-gradient(180deg,#4f8cff,#3d76e6);border-color:#3d76e6}
+      .btn.ok{background:linear-gradient(180deg,#22c55e,#16a34a);border-color:#16a34a}
+      .btn.warn{background:linear-gradient(180deg,#f59e0b,#d97706);border-color:#d97706}
+      .btn.err{background:linear-gradient(180deg,#ef4444,#dc2626);border-color:#dc2626}
+
+      .list{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+      .list-head,.list-row{display:grid;grid-template-columns:1fr 140px 140px 110px;gap:10px;align-items:center}
+      .list-head{background:var(--surface);padding:10px 12px;color:var(--muted);font-size:13px}
+      .list-row{padding:8px 12px;border-top:1px solid var(--border)}
+      .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);padding:6px 8px;border-radius:999px}
+      .pill .dot{width:8px;height:8px;border-radius:50%}
+      .dot.p{background:var(--ok)}
+      .dot.a{background:var(--err)}
+      .muted{color:var(--muted)}
+      .summary{display:flex;gap:10px;flex-wrap:wrap}
+      .summary .pill{font-size:13px}
+      .table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+      .table th,.table td{border-top:1px solid var(--border);padding:10px 12px;text-align:left}
+      .table thead th{background:var(--surface);color:var(--muted);font-weight:600;font-size:13px}
+      .footer{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container nav">
+        <div class="brand"><div class="logo" aria-hidden="true"></div><h1>Student Attendance Management</h1></div>
+        <div class="muted">Record and track daily attendance</div>
+      </div>
+    </header>
+
+    <main class="container" style="display:grid;gap:20px;margin-top:18px">
+      <section class="card">
+        <div class="row">
+          <div class="field">
+            <label for="classSel">Select Class</label>
+            <select id="classSel">
+              <option value="">-- Choose --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="dateSel">Date</label>
+            <input id="dateSel" type="date" />
+          </div>
+          <div class="field" style="min-width:220px;flex:1">
+            <label for="note">Notes (optional)</label>
+            <input id="note" placeholder="e.g., Math test today" />
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="row" style="justify-content:space-between">
+          <div class="muted">Manage</div>
+        </div>
+        <div class="row">
+          <div class="field" style="min-width:260px">
+            <label for="newClass">Add New Class</label>
+            <div class="row">
+              <input id="newClass" placeholder="e.g., Class 6 - A" />
+              <button class="btn primary" id="addClassBtn">Add Class</button>
+            </div>
+          </div>
+          <div class="field" style="min-width:320px;flex:1">
+            <label for="newStudent">Add Student to Current Class</label>
+            <div class="row">
+              <input id="newStudent" placeholder="Student full name" />
+              <button class="btn ok" id="addStudentBtn">Add Student</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card">
+          <div class="row" style="justify-content:space-between">
+            <div class="muted">Roster</div>
+            <div class="row">
+              <button class="btn ok" id="markAllP">Mark All Present</button>
+              <button class="btn err" id="markAllA">Mark All Absent</button>
+              <button class="btn" id="shuffleNames" title="Shuffle order">Shuffle</button>
+            </div>
+          </div>
+          <div class="list" id="studentList" aria-live="polite">
+            <div class="list-head"><div>Student</div><div>Present</div><div>Absent</div><div>Actions</div></div>
+            <!-- rows injected here -->
+          </div>
+          <div class="footer">
+            <div class="summary" id="summary">
+              <span class="pill"><span class="dot p"></span> Present: <b id="sumP">0</b></span>
+              <span class="pill"><span class="dot a"></span> Absent: <b id="sumA">0</b></span>
+              <span class="pill">Total: <b id="sumT">0</b></span>
+            </div>
+            <div style="flex:1"></div>
+            <button class="btn primary" id="saveBtn">Save Attendance</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="justify-content:space-between">
+            <div class="muted">Records</div>
+            <div class="row">
+              <button class="btn" id="refresh">Refresh</button>
+              <button class="btn" id="exportCsv">Export CSV</button>
+              <button class="btn warn" id="clearClass">Clear Class Records</button>
+            </div>
+          </div>
+          <div style="margin-top:8px;max-height:440px;overflow:auto">
+            <table class="table" id="recordsTable">
+              <thead>
+                <tr><th>Date</th><th>Class</th><th>Present</th><th>Absent</th><th>Total</th><th>Notes</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const DB_KEY = 'attendance_db_v1';
+      const ROSTERS_KEY = 'attendance_rosters_v1';
+      const defaultRosters = {
+        'Class 1 - A': [],
+        'Class 1 - B': [],
+        'Class 2 - A': [],
+        'Class 3 - A': [],
+        'Class 4 - A': [],
+        'Class 5 - A': [],
+        'Class 6 - A': [],
+        'Class 7 - A': [],
+        'Class 8 - A': [],
+        'Class 9 - A': [],
+        'Class 10 - A': [],
+        'Class 11 - A': [],
+        'Class 12 - A': []
+      };
+
+      // Current state
+      let roster = [];
+      let marks = {}; // name -> 'P' | 'A'
+
+      const classSel = document.getElementById('classSel');
+      const dateSel = document.getElementById('dateSel');
+      const note = document.getElementById('note');
+      const listBox = document.getElementById('studentList');
+      const sumP = document.getElementById('sumP');
+      const sumA = document.getElementById('sumA');
+      const sumT = document.getElementById('sumT');
+
+      // Set default date = today
+      const today = new Date();
+      dateSel.valueAsDate = today;
+
+      function readRosters(){
+        try{
+          const stored = JSON.parse(localStorage.getItem(ROSTERS_KEY)||'null');
+          const base = {...defaultRosters};
+          if (stored && typeof stored === 'object'){
+            Object.keys(stored).forEach(k=> base[k] = stored[k]);
+          }
+          return base;
+        }catch{ return {...defaultRosters}; }
+      }
+      function writeRosters(r){ localStorage.setItem(ROSTERS_KEY, JSON.stringify(r)); }
+      function populateClassOptions(){
+        const ro = readRosters();
+        const curr = classSel.value;
+        classSel.innerHTML = '<option value="">-- Choose --</option>' + Object.keys(ro).sort().map(c=>`<option ${c===curr?'selected':''}>${c}</option>`).join('');
+      }
+
+      function readDB(){
+        try{ return JSON.parse(localStorage.getItem(DB_KEY)||'{}'); }catch{ return {}; }
+      }
+      function writeDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+      function loadRoster(){
+        const cls = classSel.value;
+        const ro = readRosters();
+        roster = ro[cls] ? [...ro[cls]] : [];
+        marks = {};
+        roster.forEach(n => marks[n] = 'P');
+        renderList();
+      }
+
+      function renderList(){
+        const rows = roster.map(name => {
+          const id = name.replace(/\s+/g,'_');
+          const p = marks[name] === 'P';
+          return `<div class="list-row" data-name="${name}">
+            <div>${name}</div>
+            <div><input type="radio" name="${id}" value="P" ${p?'checked':''}></div>
+            <div><input type="radio" name="${id}" value="A" ${!p?'checked':''}></div>
+            <div><button class="btn err" data-remove="${name}">Remove</button></div>
+          </div>`;
+        }).join('');
+        const head = `<div class="list-head"><div>Student</div><div>Present</div><div>Absent</div><div>Actions</div></div>`;
+        listBox.innerHTML = head + (rows || `<div class="list-row"><div class="muted">No students in this class. Use Manage → Add Student.</div><div></div><div></div><div></div></div>`);
+        updateSummary();
+      }
+
+      function updateSummary(){
+        const vals = Object.values(marks);
+        const present = vals.filter(v=>v==='P').length;
+        const total = roster.length;
+        const absent = total - present;
+        sumP.textContent = present;
+        sumA.textContent = absent;
+        sumT.textContent = total;
+      }
+
+      listBox.addEventListener('change', (e)=>{
+        const row = e.target.closest('.list-row');
+        if (!row) return;
+        const name = row.dataset.name;
+        if (e.target.value==='P' || e.target.value==='A'){
+          marks[name] = e.target.value;
+          updateSummary();
+        }
+      });
+      listBox.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button[data-remove]');
+        if (!btn) return;
+        const cls = classSel.value; if (!cls) return;
+        const name = btn.dataset.remove;
+        const ro = readRosters();
+        ro[cls] = (ro[cls]||[]).filter(n=>n!==name);
+        writeRosters(ro);
+        loadRoster();
+      });
+
+      document.getElementById('markAllP').addEventListener('click', ()=>{
+        if (!classSel.value){ alert('Select a class first.'); return; }
+        if (!roster.length){ alert('This class has no students yet. Add students in Manage.'); return; }
+        roster.forEach(n=> marks[n] = 'P'); renderList();
+      });
+      document.getElementById('markAllA').addEventListener('click', ()=>{
+        if (!classSel.value){ alert('Select a class first.'); return; }
+        if (!roster.length){ alert('This class has no students yet. Add students in Manage.'); return; }
+        roster.forEach(n=> marks[n] = 'A'); renderList();
+      });
+      document.getElementById('shuffleNames').addEventListener('click', ()=>{
+        for (let i=roster.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [roster[i],roster[j]]=[roster[j],roster[i]]; }
+        renderList();
+      });
+
+      classSel.addEventListener('change', ()=>{
+        loadRoster();
+        refreshRecords();
+      });
+
+      document.getElementById('addClassBtn').addEventListener('click', ()=>{
+        const name = document.getElementById('newClass').value.trim();
+        if (!name){ alert('Enter class name.'); return; }
+        const ro = readRosters();
+        if (ro[name]){ alert('Class already exists.'); return; }
+        ro[name] = [];
+        writeRosters(ro);
+        populateClassOptions();
+        classSel.value = name;
+        loadRoster();
+        document.getElementById('newClass').value='';
+      });
+
+      document.getElementById('addStudentBtn').addEventListener('click', ()=>{
+        const cls = classSel.value; if (!cls){ alert('Select a class first.'); return; }
+        const s = document.getElementById('newStudent').value.trim();
+        if (!s){ alert('Enter student name.'); return; }
+        const ro = readRosters();
+        ro[cls] = ro[cls] || [];
+        if (ro[cls].includes(s)){ alert('Student already in roster.'); return; }
+        ro[cls].push(s);
+        writeRosters(ro);
+        document.getElementById('newStudent').value='';
+        loadRoster();
+      });
+
+      function saveAttendance(){
+        const cls = classSel.value; if (!cls){ alert('Please select a class.'); return; }
+        const date = dateSel.value; if (!date){ alert('Please select a date.'); return; }
+        if (roster.length===0){ alert('Roster is empty for selected class.'); return; }
+        const db = readDB();
+        db[cls] = db[cls] || {};
+        const present = Object.values(marks).filter(v=>v==='P').length;
+        const total = roster.length;
+        db[cls][date] = {
+          marks: {...marks},
+          note: note.value.trim()||'',
+          present, absent: total-present, total, ts: Date.now()
+        };
+        writeDB(db);
+        alert('Attendance saved for '+cls+' on '+date+'.');
+        refreshRecords();
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', saveAttendance);
+
+      function refreshRecords(){
+        const cls = classSel.value; const tbody = document.querySelector('#recordsTable tbody');
+        tbody.innerHTML='';
+        if (!cls) return;
+        const db = readDB(); const recs = db[cls] || {};
+        const rows = Object.keys(recs).sort((a,b)=> b.localeCompare(a)).map(date=>{
+          const r = recs[date];
+          return `<tr>
+            <td>${date}</td>
+            <td>${cls}</td>
+            <td>${r.present}</td>
+            <td>${r.absent}</td>
+            <td>${r.total}</td>
+            <td class="muted">${r.note? r.note.replace(/</g,'&lt;'):''}</td>
+          </tr>`;
+        }).join('');
+        tbody.innerHTML = rows || `<tr><td colspan="6" class="muted">No records yet.</td></tr>`;
+      }
+
+      document.getElementById('refresh').addEventListener('click', refreshRecords);
+
+      document.getElementById('clearClass').addEventListener('click', ()=>{
+        const cls = classSel.value; if (!cls){ alert('Select class first.'); return; }
+        if (!confirm('Clear ALL records for '+cls+'?')) return;
+        const db = readDB(); delete db[cls]; writeDB(db); refreshRecords();
+      });
+
+      function exportCSV(){
+        const cls = classSel.value; if (!cls){ alert('Select class first.'); return; }
+        const db = readDB(); const recs = db[cls] || {};
+        const rows = [['Date','Class','Student','Status','Note']];
+        Object.keys(recs).sort().forEach(date=>{
+          const r = recs[date];
+          Object.keys(r.marks).forEach(name=>{
+            rows.push([date, cls, name, r.marks[name]==='P'?'Present':'Absent', r.note||'']);
+          });
+        });
+        const csv = rows.map(r=> r.map(x=> '"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+        const blob = new Blob([csv], {type:'text/csv'}); const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download = cls.replace(/\s+/g,'_')+'_attendance.csv'; a.click(); URL.revokeObjectURL(url);
+      }
+      document.getElementById('exportCsv').addEventListener('click', exportCSV);
+
+      // Initialize
+      classSel.value = '';
+      populateClassOptions();
+      if (!classSel.value){
+        const first = Object.keys(readRosters()).sort()[0];
+        if (first) classSel.value = first;
+      }
+      loadRoster();
+      refreshRecords();
+    </script>
+  </body>
+</html>

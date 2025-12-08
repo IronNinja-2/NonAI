@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payroll Calculator</title>
+  <style>
+    :root{
+      --bg:#f7f9fc; --surface:#ffffff; --text:#0b132b; --muted:#617187; --accent:#2563eb; --border:#dde5f0; --ok:#16a34a; --err:#dc2626;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
+    .container{max-width:980px;margin:0 auto;padding:24px}
+    h1{margin:0 0 16px 0;font-size:22px}
+    .grid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:grid;gap:6px}
+    label{font-size:13px;color:var(--muted)}
+    input, select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:15px}
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap}
+    button{padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:#eef3ff;color:#0b132b;cursor:pointer}
+    button.primary{background:linear-gradient(180deg,#4f8cff,#3d76e6);border-color:#3d76e6;color:#fff}
+    button.ok{background:linear-gradient(180deg,#22c55e,#16a34a);border-color:#16a34a;color:#fff}
+    button.err{background:linear-gradient(180deg,#ef4444,#dc2626);border-color:#dc2626;color:#fff}
+    .summary{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+    .pill{background:#f1f5f9;border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:13px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid var(--border);padding:10px;text-align:left}
+    .right{text-align:right}
+    .muted{color:var(--muted)}
+    .notice{margin-top:8px;font-size:13px;color:var(--muted)}
+    .spacer{height:4px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Payroll Calculator</h1>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Employee Details</h3>
+        <div class="row">
+          <div class="field">
+            <label>Employee Name</label>
+            <input id="empName" placeholder="e.g., Jane Doe" />
+          </div>
+          <div class="field">
+            <label>Employee ID</label>
+            <input id="empId" placeholder="e.g., EMP001" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Department / Role</label>
+            <input id="empDept" placeholder="e.g., Sales / Executive" />
+          </div>
+          <div class="field">
+            <label>Payroll Period (Start)</label>
+            <input id="startDate" type="date" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Payroll Period (End)</label>
+            <input id="endDate" type="date" />
+          </div>
+          <div class="field">
+            <label>Currency</label>
+            <select id="currency">
+              <option value="₹">₹ INR</option>
+              <option value="$">$ USD</option>
+              <option value="€">€ EUR</option>
+              <option value="£">£ GBP</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Salary Information</h3>
+        <div class="row">
+          <div class="field">
+            <label>Basic Salary</label>
+            <input id="basic" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label>Allowances (HRA, Medical, Transport, etc.)</label>
+            <input id="allowances" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Overtime Hours</label>
+            <input id="otHours" type="number" min="0" step="0.01" placeholder="0" />
+          </div>
+          <div class="field">
+            <label>Overtime Rate (per hour)</label>
+            <input id="otRate" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Tax / Income Tax</label>
+            <input id="tax" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label>Provident Fund / Pension</label>
+            <input id="pf" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Other Deductions (loans, penalties, etc.)</label>
+            <input id="otherDed" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label>Notes (optional)</label>
+            <input id="notes" placeholder="e.g., Late fee, bonus remarks..." />
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btnbar">
+          <button class="primary" id="calcBtn">Calculate</button>
+          <button id="clearBtn">Clear</button>
+          <button class="ok" id="exportBtn" title="Download payslip as text">Export Payslip</button>
+        </div>
+        <div class="notice">Enter values and click Calculate. All amounts are treated as monthly by default.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Summary</h3>
+      <table>
+        <tbody>
+          <tr><th>Basic</th><td class="right" id="sBasic">-</td></tr>
+          <tr><th>Allowances</th><td class="right" id="sAllow">-</td></tr>
+          <tr><th>Overtime (Hours × Rate)</th><td class="right" id="sOT">-</td></tr>
+          <tr><th>Gross Pay</th><td class="right" id="sGross">-</td></tr>
+          <tr><th>Tax</th><td class="right" id="sTax">-</td></tr>
+          <tr><th>Provident Fund</th><td class="right" id="sPF">-</td></tr>
+          <tr><th>Other Deductions</th><td class="right" id="sOther">-</td></tr>
+          <tr><th>Total Deductions</th><td class="right" id="sDed">-</td></tr>
+          <tr><th>Net Pay</th><td class="right" id="sNet" style="font-weight:700">-</td></tr>
+        </tbody>
+      </table>
+      <div class="summary">
+        <span class="pill">Period: <b id="sPeriod" style="margin-left:6px">—</b></span>
+        <span class="pill">Employee: <b id="sEmp" style="margin-left:6px">—</b></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id)=>document.getElementById(id);
+    const fmt = (v, sym)=> isFinite(v)? `${sym}${Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}` : '-';
+
+    function n(v){ const x = parseFloat(v); return isNaN(x)? 0 : x; }
+
+    function compute(){
+      const sym = $('currency').value;
+
+      const basic = n($('basic').value);
+      const allow = n($('allowances').value);
+      const otH = n($('otHours').value);
+      const otR = n($('otRate').value);
+      const tax = n($('tax').value);
+      const pf  = n($('pf').value);
+      const other = n($('otherDed').value);
+
+      const otPay = otH * otR;
+      const gross = basic + allow + otPay;
+      const ded = tax + pf + other;
+      const net = gross - ded;
+
+      $('sBasic').textContent = fmt(basic, sym);
+      $('sAllow').textContent = fmt(allow, sym);
+      $('sOT').textContent    = `${fmt(otPay, sym)} (${otH} × ${fmt(otR, sym)})`;
+      $('sGross').textContent = fmt(gross, sym);
+      $('sTax').textContent   = fmt(tax, sym);
+      $('sPF').textContent    = fmt(pf, sym);
+      $('sOther').textContent = fmt(other, sym);
+      $('sDed').textContent   = fmt(ded, sym);
+      $('sNet').textContent   = fmt(net, sym);
+
+      const s = $('startDate').value || '—';
+      const e = $('endDate').value || '—';
+      $('sPeriod').textContent = `${s} → ${e}`;
+
+      const name = $('empName').value || '—';
+      const id = $('empId').value || '—';
+      const dept = $('empDept').value || '—';
+      $('sEmp').textContent = `${name} (${id}) • ${dept}`;
+
+      return { sym, basic, allow, otH, otR, otPay, gross, tax, pf, other, ded, net, s, e, name, id, dept, notes: $('notes').value || '' };
+    }
+
+    function validateDates(){
+      const s = $('startDate').value, e = $('endDate').value;
+      if (s && e && new Date(s) > new Date(e)){
+        alert('Start Date cannot be after End Date.');
+        return false;
+      }
+      return true;
+    }
+
+    $('calcBtn').addEventListener('click', ()=>{
+      if (!validateDates()) return;
+      compute();
+    });
+
+    $('clearBtn').addEventListener('click', ()=>{
+      ['empName','empId','empDept','basic','allowances','otHours','otRate','tax','pf','otherDed','notes','startDate','endDate'].forEach(id=>{$(id).value='';});
+      $('currency').value='₹';
+      ['sBasic','sAllow','sOT','sGross','sTax','sPF','sOther','sDed','sNet'].forEach(id=>$(id).textContent='-');
+      $('sPeriod').textContent='—'; $('sEmp').textContent='—';
+    });
+
+    $('exportBtn').addEventListener('click', ()=>{
+      if (!validateDates()) return;
+      const r = compute();
+      const lines = [
+        'Payslip',
+        '------------------------------',
+        `Employee: ${r.name} (${r.id})`,
+        `Department/Role: ${r.dept}`,
+        `Period: ${r.s} to ${r.e}`,
+        '',
+        `Basic: ${fmt(r.basic, r.sym)}`,
+        `Allowances: ${fmt(r.allow, r.sym)}`,
+        `Overtime: ${fmt(r.otPay, r.sym)} (${r.otH} × ${fmt(r.otR, r.sym)})`,
+        `Gross Pay: ${fmt(r.gross, r.sym)}`,
+        '',
+        `Tax: ${fmt(r.tax, r.sym)}`,
+        `Provident Fund: ${fmt(r.pf, r.sym)}`,
+        `Other Deductions: ${fmt(r.other, r.sym)}`,
+        `Total Deductions: ${fmt(r.ded, r.sym)}`,
+        '',
+        `Net Pay: ${fmt(r.net, r.sym)}`,
+        '',
+        r.notes ? `Notes: ${r.notes}` : ''
+      ].join('\n');
+
+      const blob = new Blob([lines], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `Payslip_${(r.name||'Employee').replace(/\\s+/g,'_')}.txt`;
+      a.click(); URL.revokeObjectURL(url);
+    });
+
+    // Defaults
+    const today = new Date();
+    const end = today.toISOString().slice(0,10);
+    const start = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().slice(0,10);
+    $('startDate').value = start;
+    $('endDate').value = end;
+  </script>
+</body>
+</html>

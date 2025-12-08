@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Sequential Circuits Q&A</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .answer-box {
+            transition: all 0.3s ease;
+        }
+        .answer-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        code {
+            background-color: #f3f4f6;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            color: #e11d48;
+        }
+        .diagram-placeholder {
+            background-color: #eff6ff;
+            border: 2px dashed #3b82f6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            color: #1d4ed8;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+
+    <!-- Header -->
+    <header class="bg-blue-700 text-white py-8 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-3xl font-bold mb-2">Module 3: Sequential Circuits</h1>
+            <p class="text-blue-100 opacity-90">Comprehensive Questions & Solutions</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- Navigation/Intro -->
+        <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Study Guide Overview</h2>
+            <p class="text-gray-600">This document contains solutions to the short answer questions and descriptive design problems from Module 3. Mathematical expressions are rendered for clarity.</p>
+            <div class="mt-4 flex gap-4 text-sm">
+                <a href="#part-a" class="text-blue-600 hover:underline font-medium">Jump to Part A: Short Answers</a>
+                <a href="#part-b" class="text-blue-600 hover:underline font-medium">Jump to Part B: Design Problems</a>
+            </div>
+        </div>
+
+        <!-- Part A Section -->
+        <section id="part-a">
+            <div class="flex items-center mb-6">
+                <div class="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold mr-3">A</div>
+                <h2 class="text-2xl font-bold text-gray-800">Short Answer Questions</h2>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Q1 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">1. What is a sequential circuit?</h3>
+                    <p class="text-slate-700">A sequential circuit is a digital logic circuit where the output depends not only on the present inputs but also on the history of past inputs (the current state). Unlike combinational circuits, sequential circuits possess memory elements.</p>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">2. Write the names of any two basic forms of memory elements.</h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-2">
+                        <li>Latches</li>
+                        <li>Flip-flops</li>
+                    </ul>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">3. What is the main difference between latches and flip-flops?</h3>
+                    <p class="text-slate-700">The main difference is the triggering mechanism:</p>
+                    <ul class="list-disc list-inside text-slate-700 ml-4 mt-2">
+                        <li><strong>Latch:</strong> It is level-triggered, meaning the output changes as long as the enable signal is active.</li>
+                        <li><strong>Flip-flop:</strong> It is edge-triggered, meaning the output changes only at a specific moment (transition) of the clock signal (rising or falling edge).</li>
+                    </ul>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">4. What will be the output (Q) of J-K flip-flop when input \(J=0\) & \(K=0\)?</h3>
+                    <p class="text-slate-700">The output remains unchanged (Hold State).</p>
+                </div>
+
+                <!-- Q5 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">5. In T flip-flop, output (Q) changed from 1 to 0. What was the logic level applied at T?</h3>
+                    <p class="text-slate-700">The logic level was <strong>1</strong>.<br>(A T flip-flop toggles its state only when the input \(T=1\)).</p>
+                </div>
+
+                <!-- Q6 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">6. What is an asynchronous sequential circuit?</h3>
+                    <p class="text-slate-700">An asynchronous sequential circuit is a system that does not use a global clock signal to synchronize its internal state changes. The state transitions occur immediately when the input signals change, governed only by propagation delays.</p>
+                </div>
+
+                <!-- Q7 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">7. What will be the output (Q) of S-R flip-flop when input \(S=1\) & \(R=1\)?</h3>
+                    <p class="text-slate-700"><span class="text-red-600 font-semibold">Invalid / Indeterminate.</span> This state is forbidden because it tries to set and reset the flip-flop simultaneously, leading to unpredictable behavior.</p>
+                </div>
+
+                <!-- Q8 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">8. How many bits can a flip-flop store?</h3>
+                    <p class="text-slate-700">A single flip-flop can store 1 bit of data.</p>
+                </div>
+
+                <!-- Q9 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">9. How is a PISO register different from a SIPO register?</h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-2">
+                        <li><strong>PISO (Parallel-In Serial-Out):</strong> Data is loaded into the register simultaneously (in parallel) and shifted out one bit at a time (serially).</li>
+                        <li><strong>SIPO (Serial-In Parallel-Out):</strong> Data enters the register one bit at a time (serially) and is read from all outputs simultaneously (in parallel).</li>
+                    </ul>
+                </div>
+
+                <!-- Q10 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">10. Write any two applications of shift registers.</h3>
+                    <ol class="list-decimal list-inside text-slate-700 ml-2">
+                        <li>Serial-to-Parallel or Parallel-to-Serial data conversion.</li>
+                        <li>Producing time delays in digital circuits.</li>
+                    </ol>
+                </div>
+
+                <!-- Q11 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">11. What is meant by triggering of a Flip-flop?</h3>
+                    <p class="text-slate-700">Triggering refers to the specific event or signal condition that causes the flip-flop to change its state. It is usually a clock pulse transition, such as the Rising Edge (low-to-high) or Falling Edge (high-to-low).</p>
+                </div>
+
+                <!-- Q12 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">12. Draw and explain SR latch.</h3>
+                    <p class="text-slate-700">An SR (Set-Reset) latch is the simplest form of bistable multivibrator. It can be constructed using two cross-coupled NOR gates (or NAND gates).</p>
+                    <ul class="list-disc list-inside text-slate-700 ml-4 mt-2">
+                        <li><strong>Set State:</strong> When \(S=1, R=0\), the output \(Q\) becomes 1.</li>
+                        <li><strong>Reset State:</strong> When \(S=0, R=1\), the output \(Q\) becomes 0.</li>
+                        <li><strong>Hold State:</strong> When \(S=0, R=0\), the latch retains its previous state.</li>
+                    </ul>
+                </div>
+
+                <!-- Q13 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">13. Differences between JK Flip-flop and Master-Slave Flip-flop?</h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-2">
+                        <li><strong>Standard JK Flip-flop:</strong> Is susceptible to the "Race Around Condition" if the clock pulse width is wider than the propagation delay when \(J=1\) and \(K=1\).</li>
+                        <li><strong>Master-Slave Flip-flop:</strong> Consists of two cascaded flip-flops (Master and Slave). It isolates the input from the output during the clock cycle, effectively eliminating the Race Around Condition.</li>
+                    </ul>
+                </div>
+
+                <!-- Q14 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">14. What is a transparent latch?</h3>
+                    <p class="text-slate-700">A transparent latch (typically a D-Latch) is a device where the output \(Q\) follows the input \(D\) exactly as long as the Enable input is active (High). During this period, the latch is "transparent" to the data. When the Enable goes Low, the output is latched (held).</p>
+                </div>
+
+                <!-- Q15 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">15. What is the race around condition in JK flip-flops?</h3>
+                    <p class="text-slate-700">The race around condition occurs when \(J=1\) and \(K=1\) (Toggle mode) and the clock pulse duration is longer than the propagation delay of the flip-flop. The output oscillates (toggles) multiple times within a single clock pulse, leading to an uncertain final state.</p>
+                </div>
+
+                <!-- Q16 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">16. Problem with SR FF and how JK FF removes it?</h3>
+                    <p class="text-slate-700"><strong>Problem:</strong> The SR flip-flop has an invalid state when both inputs \(S=1\) and \(R=1\).<br><strong>Solution:</strong> The JK flip-flop solves this by using feedback connections. When \(J=1\) and \(K=1\), instead of becoming invalid, the output toggles (inverts its previous state).</p>
+                </div>
+
+                <!-- Q17 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">17. Full Adder Sum and Carry expressions.</h3>
+                    <p class="text-slate-700">
+                        Sum (\(S\)): \(S = A \oplus B \oplus C_{in}\)<br>
+                        Carry (\(C_{out}\)): \(C_{out} = AB + BC_{in} + AC_{in}\)
+                    </p>
+                </div>
+
+                <!-- Q18 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">18. State one disadvantage of S-R Flip-flop and how to overcome it.</h3>
+                    <p class="text-slate-700">
+                        <strong>Disadvantage:</strong> It enters an undefined/invalid state if both inputs are High (\(S=1, R=1\)).<br>
+                        <strong>Overcome by:</strong> Using a JK Flip-flop, which handles the (1, 1) input condition by toggling the output.
+                    </p>
+                </div>
+
+                <!-- Q19 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">19. State one disadvantage of J-K Flip-flops.</h3>
+                    <p class="text-slate-700">
+                        <strong>Disadvantage:</strong> It suffers from the Race Around Condition when \(J=1, K=1\) if the clock pulse is too wide. (This is overcome by using a Master-Slave JK flip-flop).
+                    </p>
+                </div>
+
+                <!-- Q20 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">20. What is a synchronous counter?</h3>
+                    <p class="text-slate-700">A synchronous counter is a sequential circuit where all the flip-flops are triggered by the same universal clock signal simultaneously. This allows for faster operation compared to asynchronous (ripple) counters as propagation delays do not accumulate.</p>
+                </div>
+
+                <!-- Q22 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">22. Difference between Ring and Johnson counter?</h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-2">
+                        <li><strong>Ring Counter:</strong> The output of the last flip-flop is connected directly to the input of the first flip-flop. For \(n\) flip-flops, it has \(n\) distinct states.</li>
+                        <li><strong>Johnson Counter:</strong> The inverted output (\(\bar{Q}\)) of the last flip-flop is connected to the input of the first flip-flop. For \(n\) flip-flops, it has \(2n\) distinct states.</li>
+                    </ul>
+                </div>
+
+                <!-- Q23 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">23. State the different types of counters.</h3>
+                    <p class="text-slate-700">Counters are broadly classified into:</p>
+                    <ul class="list-disc list-inside text-slate-700 ml-2">
+                        <li>Asynchronous (Ripple) Counters</li>
+                        <li>Synchronous Counters</li>
+                    </ul>
+                    <p class="text-slate-700 mt-2">They can also be classified by count direction (Up, Down, Up/Down) or coding (Binary, BCD, Decade, Ring, Johnson).</p>
+                </div>
+
+                <!-- Q24 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">24. What is the meaning of 'toggle'?</h3>
+                    <p class="text-slate-700">Toggle refers to the action where a flip-flop changes its output to the complement of its current state (e.g., switching from 1 to 0 or 0 to 1) upon receiving a clock pulse. This typically occurs in T flip-flops or JK flip-flops when \(J=1\) and \(K=1\).</p>
+                </div>
+
+                <!-- Q25 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">25. List applications of counters.</h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-2">
+                        <li>Counting events (e.g., items on a conveyor belt).</li>
+                        <li>Frequency division.</li>
+                        <li>Digital clocks and timers.</li>
+                        <li>Address generation in memory systems.</li>
+                    </ul>
+                </div>
+
+                 <!-- Q26 -->
+                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 answer-box">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">26. Differentiate between edge trigger and level trigger of a flip-flop.</h3>
+                    <ul class="list-disc list-inside text-slate-700 ml-2">
+                        <li><strong>Edge Trigger:</strong> The circuit responds to the input only at the specific transition of the clock signal (rising or falling edge).</li>
+                        <li><strong>Level Trigger:</strong> The circuit responds to the input as long as the clock signal is at a specific voltage level (High or Low).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part B Section -->
+        <section id="part-b" class="pt-8">
+            <div class="flex items-center mb-6">
+                <div class="h-8 w-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold mr-3">B</div>
+                <h2 class="text-2xl font-bold text-gray-800">Descriptive & Design Problems</h2>
+            </div>
+
+            <div class="space-y-8">
+                
+                <!-- Design Q1 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 1: Shift Register Sequence</h3>
+                    <p class="text-gray-700 mb-4 italic">"The bit sequence 0010 is serially entered (right-most bit first) into a 4-bit shift register. What are the Q outputs after three clock pulses?"</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Solution Logic:</h4>
+                        <p class="text-gray-700">Sequence to enter (Right-most first): <strong>0, 1, 0, 0</strong>.</p>
+                        <ul class="list-decimal list-inside mt-2 space-y-1 text-gray-600">
+                            <li><strong>Start:</strong> 0000</li>
+                            <li><strong>Pulse 1 (Input 0):</strong> 0000 (0 shifts in)</li>
+                            <li><strong>Pulse 2 (Input 1):</strong> 1000 (1 shifts in)</li>
+                            <li><strong>Pulse 3 (Input 0):</strong> 0100 (0 shifts in)</li>
+                        </ul>
+                        <p class="font-bold mt-3 text-gray-800">Final Answer: 0100</p>
+                    </div>
+                </div>
+
+                <!-- Design Q2 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 2: Ring Counter Diagram & Sequence</h3>
+                    <p class="text-gray-700 mb-4 italic">"Draw the diagram of 4-bit Ring Counter and write the sequence of different states it transitions to."</p>
+                    
+                    <div class="diagram-placeholder">
+                        [Image of 4-bit ring counter logic diagram]
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Sequence:</h4>
+                        <p class="text-gray-700">If initialized to 1000, the states are:</p>
+                        <p class="font-mono mt-2 text-gray-800">
+                            \(1000 \rightarrow 0100 \rightarrow 0010 \rightarrow 0001 \rightarrow 1000 \dots\)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Design Q3 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 3: Decade Up Counter</h3>
+                    <p class="text-gray-700 mb-4 italic">"Write a short note on Decade up counter."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <p class="text-gray-700">A decade up counter (or Mod-10 counter) counts from 0 to 9 (binary 0000 to 1001) and then resets to 0. It requires 4 flip-flops. It is often implemented using a standard binary counter with a reset logic gate that clears the count when it reaches 1010 (decimal 10).</p>
+                    </div>
+                </div>
+
+                <!-- Design Q4 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 4: Ripple Counter</h3>
+                    <p class="text-gray-700 mb-4 italic">"What do you understand by ripple (asynchronous) counter? Draw the circuit for 3 bit ripple counter using J-K flip-flop?"</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                        <h4 class="font-semibold text-green-700 mb-2">Definition:</h4>
+                        <p class="text-gray-700">A counter where the clock input of a flip-flop is driven by the output of the previous flip-flop rather than a global clock. This creates a "ripple" effect in delay.</p>
+                    </div>
+
+                    <div class="diagram-placeholder">
+                        
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Circuit Description:</h4>
+                        <p class="text-gray-700">It uses 3 JK flip-flops with all \(J\) and \(K\) inputs tied to Logic 1 (High). The output \(Q_0\) clocks \(FF_1\), and \(Q_1\) clocks \(FF_2\).</p>
+                    </div>
+                </div>
+
+                <!-- Design Q5 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 5: Master-Slave Flip Flop</h3>
+                    <p class="text-gray-700 mb-4 italic">"Illustrate the working of a Master-Slave Flip Flop discussing how it can be used to overcome the race around condition."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <p class="text-gray-700">The Master-Slave FF typically consists of two latch stages. The "Master" is triggered on one edge of the clock (e.g., rising), and the "Slave" is triggered on the opposite edge (e.g., falling). This isolation ensures that the input cannot affect the output directly during the same clock phase, preventing the multiple toggles known as the race around condition.</p>
+                    </div>
+                </div>
+
+                <!-- Design Q6 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 6: T Flip Flop Working</h3>
+                    <p class="text-gray-700 mb-4 italic">"Demonstrate the working of T Flip Flop. Why is it called toggle FF?"</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <ul class="list-disc list-inside text-gray-700">
+                            <li><strong>Working:</strong> When input \(T=0\), \(Q_{next} = Q\) (Hold). When \(T=1\), \(Q_{next} = \bar{Q}\) (Toggle).</li>
+                            <li><strong>Name:</strong> It is called "Toggle" FF because its primary function is to invert its state when the input is active.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Design Q7 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 7: Johnson Counter Construction</h3>
+                    <p class="text-gray-700 mb-4 italic">"Construct a 4-stage Johnson Counter using D-Flip Flop."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <p class="text-gray-700 mb-2">This is constructed by connecting the \(\bar{Q}\) (inverted output) of the last D flip-flop to the D input of the first flip-flop.</p>
+                        <p class="font-bold text-gray-800">States (Total 8):</p>
+                        <p class="font-mono text-sm text-gray-600">0000, 1000, 1100, 1110, 1111, 0111, 0011, 0001</p>
+                    </div>
+                </div>
+
+                <!-- Design Q17b -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 17b: Conveyor Belt Counter</h3>
+                    <p class="text-gray-700 mb-4 italic">"Count up to 6000 items. Determine the number of flip-flops required."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Calculation:</h4>
+                        <p class="text-gray-700">Formula: \(2^n \ge N\), where \(N = 6000\).</p>
+                        <ul class="list-disc list-inside mt-2 text-gray-600">
+                            <li>\(2^{12} = 4096\) (Too small)</li>
+                            <li>\(2^{13} = 8192\) (Sufficient)</li>
+                        </ul>
+                        <p class="font-bold mt-3 text-gray-800">Answer: 13 Flip-flops</p>
+                    </div>
+                </div>
+
+                <!-- Design Q19 -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 19: JK Sequence Analysis</h3>
+                    <p class="text-gray-700 mb-4 italic">"Derive expression and sequence for JK Flip-flop with \(J=Q', K=1\)."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Analysis:</h4>
+                        <p class="text-gray-700">
+                            <strong>Expression:</strong> Standard JK characteristic equation is \(Q_{n+1} = J\bar{Q}_n + \bar{K}Q_n\).<br>
+                            Given \(J = \bar{Q}_n\) and \(K = 1\) (so \(\bar{K}=0\)).<br>
+                            Substitution: \(Q_{n+1} = (\bar{Q}_n)\bar{Q}_n + (0)Q_n = \bar{Q}_n\).
+                        </p>
+                        <p class="text-gray-700 mt-2">
+                            <strong>Sequence:</strong> The output simply toggles every clock pulse.<br>
+                            Initial: 0, Pulse 1: 1, Pulse 2: 0...
+                        </p>
+                        <p class="font-bold text-gray-800 mt-2">Sequence: 0, 1, 0, 1, 0, 1...</p>
+                    </div>
+                </div>
+
+                <!-- Design Q36a -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 36a: Propagation Delay Calculation</h3>
+                    <p class="text-gray-700 mb-4 italic">"Modulo-1024 ripple counter. Frequency 1 MHz. Calculate max permissible propagation delay per FF."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Calculation:</h4>
+                        <p class="text-gray-700">
+                            1. Period \(T = \frac{1}{f} = 1 \mu s = 1000 \text{ ns}\).<br>
+                            2. Number of FFs (\(n\)) for Mod-1024: \(2^{10} = 1024\), so \(n=10\).<br>
+                            3. Condition: \(n \times t_{pd} \le T\)<br>
+                            4. \(10 \times t_{pd} \le 1000 \text{ ns} \rightarrow t_{pd} \le 100 \text{ ns}\)
+                        </p>
+                        <p class="font-bold mt-3 text-gray-800">Answer: 100 ns</p>
+                    </div>
+                </div>
+
+                <!-- Design Q36b -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 36b: Max Frequency Calculation</h3>
+                    <p class="text-gray-700 mb-4 italic">"Mod-16 ripple counter. \(t_{pd} = 50\)ns. Find max frequency."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Calculation:</h4>
+                        <p class="text-gray-700">
+                            1. Mod-16 requires \(n=4\) flip-flops.<br>
+                            2. Total Delay = \(4 \times 50 \text{ ns} = 200 \text{ ns}\).<br>
+                            3. \(f_{max} = \frac{1}{\text{Total Delay}} = \frac{1}{200 \times 10^{-9}}\).
+                        </p>
+                        <p class="font-bold mt-3 text-gray-800">Answer: 5 MHz</p>
+                    </div>
+                </div>
+
+                 <!-- Design Q37a -->
+                 <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-green-500">
+                    <h3 class="font-bold text-xl text-gray-900 mb-4">Problem 37a: XOR Shift Register</h3>
+                    <p class="text-gray-700 mb-4 italic">"Start 1000. \(D = Q_0 \oplus Q_2 \oplus Q_3\). Shift Right."</p>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-green-700 mb-2">Trace:</h4>
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="py-1">Clock</th>
+                                    <th>Current (Q3 Q2 Q1 Q0)</th>
+                                    <th>D Calc \((Q_0 \oplus Q_2 \oplus Q_3)\)</th>
+                                    <th>Next State</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-mono">
+                                <tr>
+                                    <td class="py-1">0</td>
+                                    <td>1000</td>
+                                    <td>0^0^1 = 1</td>
+                                    <td>1100</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1">1</td>
+                                    <td>1100</td>
+                                    <td>0^1^1 = 0</td>
+                                    <td>0110</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1">2</td>
+                                    <td>0110</td>
+                                    <td>0^1^0 = 1</td>
+                                    <td>1011</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+        <footer class="text-center text-gray-400 py-8 mt-8 border-t">
+            <p>Generated for Module 3 Review</p>
+        </footer>
+
+    </main>
+</body>
+</html>

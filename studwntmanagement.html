@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .menu-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .content-area {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 500px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .student-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .student-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .student-card p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .courses {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .course-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-right: 8px;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Student Management System</h1>
+            <p>Manage students, courses, and grades efficiently</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h2>Menu</h2>
+                <button class="menu-btn" onclick="showSection('add')">➕ Add Student</button>
+                <button class="menu-btn" onclick="showSection('view')">👥 View All Students</button>
+                <button class="menu-btn" onclick="showSection('search')">🔍 Search Student</button>
+                <button class="menu-btn" onclick="showSection('courses')">📚 Manage Courses</button>
+            </div>
+
+            <div class="content-area">
+                <!-- Add Student Section -->
+                <div id="add" class="section active">
+                    <h2>Add New Student</h2>
+                    <div id="addAlert"></div>
+                    <form onsubmit="addStudent(event)">
+                        <div class="form-group">
+                            <label>Student Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Age</label>
+                            <input type="number" id="age" min="1" max="100" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </form>
+                </div>
+
+                <!-- View All Students Section -->
+                <div id="view" class="section">
+                    <h2>All Students</h2>
+                    <div id="studentsList"></div>
+                </div>
+
+                <!-- Search Student Section -->
+                <div id="search" class="section">
+                    <h2>Search Student</h2>
+                    <input type="text" class="search-box" id="searchInput" placeholder="Search by name or ID..." oninput="searchStudents()">
+                    <div id="searchResults"></div>
+                </div>
+
+                <!-- Manage Courses Section -->
+                <div id="courses" class="section">
+                    <h2>Manage Courses & Grades</h2>
+                    <div id="courseAlert"></div>
+                    <div class="form-group">
+                        <label>Select Student</label>
+                        <select id="studentSelect" onchange="loadStudentCourses()">
+                            <option value="">-- Select a student --</option>
+                        </select>
+                    </div>
+                    <div id="studentCoursesInfo"></div>
+                    <div style="margin-top: 20px;">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">Add New Course</h3>
+                        <form onsubmit="addCourse(event)">
+                            <div class="form-group">
+                                <label>Course Name</label>
+                                <input type="text" id="courseName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Grade</label>
+                                <input type="text" id="courseGrade" placeholder="A, B, C, D, F or 0-100" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Course</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let students = [];
+        let nextId = 1;
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            if (sectionId === 'view') {
+                displayAllStudents();
+            } else if (sectionId === 'courses') {
+                updateStudentSelect();
+            }
+        }
+
+        function showAlert(elementId, message, type) {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        function addStudent(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const age = parseInt(document.getElementById('age').value);
+            
+            const student = {
+                id: nextId++,
+                name: name,
+                email: email,
+                age: age,
+                courses: {}
+            };
+            
+            students.push(student);
+            showAlert('addAlert', `✓ Student "${name}" added successfully with ID: ${student.id}`, 'success');
+            
+            event.target.reset();
+        }
+
+        function displayAllStudents() {
+            const listDiv = document.getElementById('studentsList');
+            
+            if (students.length === 0) {
+                listDiv.innerHTML = '<div class="no-data">No students found. Add some students to get started!</div>';
+                return;
+            }
+            
+            let html = '';
+            students.forEach(student => {
+                html += `
+                    <div class="student-card">
+                        <h3>${student.name}</h3>
+                        <p><strong>ID:</strong> ${student.id}</p>
+                        <p><strong>Email:</strong> ${student.email}</p>
+                        <p><strong>Age:</strong> ${student.age}</p>
+                        ${Object.keys(student.courses).length > 0 ? `
+                            <div class="courses">
+                                <strong>Courses:</strong><br>
+                                ${Object.entries(student.courses).map(([course, grade]) => 
+                                    `<span class="course-tag">${course}: ${grade}</span>`
+                                ).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-danger" onclick="deleteStudent(${student.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            listDiv.innerHTML = html;
+        }
+
+        function deleteStudent(id) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                students = students.filter(s => s.id !== id);
+                displayAllStudents();
+            }
+        }
+
+        function searchStudents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (searchTerm === '') {
+                resultsDiv.innerHTML = '<div class="no-data">Enter a name or ID to search</div>';
+                return;
+            }
+            
+            const found = students.filter(s => 
+                s.name.toLowerCase().includes(searchTerm) || 
+                s.id.toString() === searchTerm
+            );
+            
+            if (found.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-data">No students found</div>';
+                return;
+            }
+            
+            let html = '';
+            found.forEach(student => {
+                html += `
+                    <div class="student-card">
+                        <h3>${student.name}</h3>
+                        <p><strong>ID:</strong> ${student.id}</p>
+                        <p><strong>Email:</strong> ${student.email}</p>
+                        <p><strong>Age:</strong> ${student.age}</p>
+                        ${Object.keys(student.courses).length > 0 ? `
+                            <div class="courses">
+                                <strong>Courses:</strong><br>
+                                ${Object.entries(student.courses).map(([course, grade]) => 
+                                    `<span class="course-tag">${course}: ${grade}</span>`
+                                ).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function updateStudentSelect() {
+            const select = document.getElementById('studentSelect');
+            select.innerHTML = '<option value="">-- Select a student --</option>';
+            
+            students.forEach(student => {
+                select.innerHTML += `<option value="${student.id}">${student.name} (ID: ${student.id})</option>`;
+            });
+        }
+
+        function loadStudentCourses() {
+            const studentId = parseInt(document.getElementById('studentSelect').value);
+            const infoDiv = document.getElementById('studentCoursesInfo');
+            
+            if (!studentId) {
+                infoDiv.innerHTML = '';
+                return;
+            }
+            
+            const student = students.find(s => s.id === studentId);
+            
+            if (Object.keys(student.courses).length === 0) {
+                infoDiv.innerHTML = '<p style="color: #999; margin: 15px 0;">This student has no courses yet.</p>';
+            } else {
+                let html = '<div style="margin: 15px 0;"><strong>Current Courses:</strong><br>';
+                Object.entries(student.courses).forEach(([course, grade]) => {
+                    html += `<span class="course-tag">${course}: ${grade}</span>`;
+                });
+                html += '</div>';
+                infoDiv.innerHTML = html;
+            }
+        }
+
+        function addCourse(event) {
+            event.preventDefault();
+            
+            const studentId = parseInt(document.getElementById('studentSelect').value);
+            
+            if (!studentId) {
+                showAlert('courseAlert', '✗ Please select a student first', 'error');
+                return;
+            }
+            
+            const courseName = document.getElementById('courseName').value;
+            const courseGrade = document.getElementById('courseGrade').value;
+            
+            const student = students.find(s => s.id === studentId);
+            student.courses[courseName] = courseGrade;
+            
+            showAlert('courseAlert', `✓ Added ${courseName} with grade ${courseGrade} for ${student.name}`, 'success');
+            
+            document.getElementById('courseName').value = '';
+            document.getElementById('courseGrade').value = '';
+            loadStudentCourses();
+        }
+
+        // Initialize
+        displayAllStudents();
+    </script>
+</body>
+</html>
